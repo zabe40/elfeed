@@ -92,7 +92,12 @@ the :last-update time is updated.")
 
 (cl-defstruct (elfeed-entry (:constructor elfeed-entry--create))
   "A single entry from a feed, normalized towards Atom."
-  id title link date content content-type enclosures tags feed-id meta)
+  id title link date content content-type
+  (enclosures nil :documentation "
+Each enclosure is a list of (URL MIME-TYPE LENGTH). LENGTH is
+represented as a string (integers in 32-bit Emacs are limited to
+expressing quantities no larger than 512MB).")
+  tags feed-id meta)
 
 (defun elfeed-entry-merge (a b)
   "Merge B into A, preserving A's tags. Return true if an actual
