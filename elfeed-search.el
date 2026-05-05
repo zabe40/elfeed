@@ -638,8 +638,7 @@ Executing a filter in bytecode form is generally faster than
   "Prompt for a new filter, starting with CURRENT."
   (read-from-minibuffer
    "Filter: "
-   (if (or (string= "" current)
-           (string-match-p " $" current))
+   (if (or (string= "" current) (string-suffix-p " " current))
        current
      (concat current " "))
    nil nil 'elfeed-search-filter-history))
