@@ -157,8 +157,7 @@ Return non-nil if an actual update occurred, not counting content."
            and do
            (progn
              (avl-tree-enter elfeed-db-index id)
-             (cl-loop for hook in elfeed-new-entry-hook
-                      do (funcall hook entry)))
+             (run-hook-with-args 'elfeed-new-entry-hook entry))
            finally
            (unless (zerop change-count)
              (elfeed-db-set-update-time)))
@@ -247,8 +246,7 @@ The FEED-OR-ID may be a feed struct or a feed ID (url)."
   "Apply `elfeed-new-entry-hook' to all entries in the database."
   (interactive)
   (with-elfeed-db-visit (entry _)
-    (cl-loop for hook in elfeed-new-entry-hook
-             do (funcall hook entry))))
+    (run-hook-with-args 'elfeed-new-entry-hook entry)))
 
 (defmacro elfeed-db-return (&optional value)
   "Use this to exit early and return VALUE from `with-elfeed-db-visit'."

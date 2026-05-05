@@ -358,8 +358,8 @@ URL identifies the feed and XML is the parsed content."
                                            (list :authors authors))
                                        ,@(when categories
                                            (list :categories categories))))))
-               (dolist (hook elfeed-new-entry-parse-hook)
-                 (funcall hook :atom entry db-entry))
+               (run-hook-with-args 'elfeed-new-entry-parse-hook
+                                   :atom entry db-entry)
                db-entry))))
 
 (defsubst elfeed--rss-author-to-plist (author)
@@ -427,8 +427,8 @@ URL identifies the feed and XML is the parsed content."
                                            (list :authors authors))
                                        ,@(when categories
                                            (list :categories categories))))))
-               (dolist (hook elfeed-new-entry-parse-hook)
-                 (funcall hook :rss item db-entry))
+               (run-hook-with-args 'elfeed-new-entry-parse-hook
+                                   :rss item db-entry)
                db-entry))))
 
 (defun elfeed-entries-from-rss1.0 (url xml)
@@ -463,8 +463,8 @@ URL identifies the feed and XML is the parsed content."
                                       original-date date)
                                :content description
                                :content-type 'html)))
-               (dolist (hook elfeed-new-entry-parse-hook)
-                 (funcall hook :rss1.0 item db-entry))
+               (run-hook-with-args 'elfeed-new-entry-parse-hook
+                                   :rss1.0 item db-entry)
                db-entry))))
 
 (defun elfeed-feed-list ()
