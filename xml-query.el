@@ -36,7 +36,7 @@
   (when (symbolp tag)
     (let ((name (symbol-name tag)))
       (if (cl-find ?\: name)
-          (intern (replace-regexp-in-string "^.+:" "" name))
+          (intern (replace-regexp-in-string "\\`.+:" "" name))
         tag))))
 
 (defun xml-query--tag-all (match xml)

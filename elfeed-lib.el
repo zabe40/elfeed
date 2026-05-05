@@ -104,7 +104,7 @@ ALIGN should be a keyword :left or :right."
   "Attempt to parse STRING as a simply formatted ISO 8601 date.
 Examples: 2015-02-22, 2015-02, 20150222"
   (let* ((re (cl-flet ((re-numbers (num) (format "\\([0-9]\\{%s\\}\\)" num)))
-               (format "^%s-?%s-?%s?\\(T%s:%s:?%s?\\)?"
+               (format "\\`%s-?%s-?%s?\\(T%s:%s:?%s?\\)?"
                        (re-numbers 4)
                        (re-numbers 2)
                        (re-numbers 2)
@@ -331,24 +331,24 @@ The relative URL algorithm is described in RFC 3986 §5.2.4."
    with output = ""
    for s = input
    then (cond
-         ((string-match-p "^\\.\\./" s)
+         ((string-match-p "\\`\\.\\./" s)
           (substring s 3))
-         ((string-match-p "^\\./" s)
+         ((string-match-p "\\`\\./" s)
           (substring s 2))
-         ((string-match-p "^/\\./" s)
+         ((string-match-p "\\`/\\./" s)
           (substring s 2))
-         ((string-match-p "^/\\.$" s) "/")
-         ((string-match-p "^/\\.\\./" s)
-          (setf output (replace-regexp-in-string "/?[^/]*$" "" output))
+         ((string-match-p "\\`/\\.\\'" s) "/")
+         ((string-match-p "\\`/\\.\\./" s)
+          (setf output (replace-regexp-in-string "/?[^/]*\\'" "" output))
           (substring s 3))
-         ((string-match-p "^/\\.\\.$" s)
-          (setf output (replace-regexp-in-string "/?[^/]*$" "" output))
+         ((string-match-p "\\`/\\.\\.\\'" s)
+          (setf output (replace-regexp-in-string "/?[^/]*\\'" "" output))
           "/")
-         ((string-match-p "^\\.\\.?$" s)
+         ((string-match-p "\\`\\.\\.?\\'" s)
           "")
-         ((string-match "^/?[^/]*" s)
+         ((string-match "\\`/?[^/]*" s)
           (setf output (concat output (match-string 0 s)))
-          (replace-regexp-in-string "^/?[^/]*" "" s)))
+          (replace-regexp-in-string "\\`/?[^/]*" "" s)))
    until (zerop (length s))
    finally return output))
 
@@ -368,7 +368,7 @@ The relative URL algorithm is described in RFC 3986 §5.2.4."
        ;; Does it start with //? Append the old protocol.
        ((url-fullness new) (concat (url-type old) ":" new-url))
        ;; Is it a relative path?
-       ((not (string-match-p "^/" new-url))
+       ((not (string-match-p "\\`/" new-url))
         (let* ((old-dir (or (file-name-directory (url-filename old)) "/"))
                (concat (concat old-dir new-url))
                (new-file (elfeed-remove-dot-segments concat)))

@@ -573,7 +573,7 @@ Return DEFAULT if unavailable."
 If STATS-P is true, return the space cleared in bytes."
   (elfeed-db-gc-empty-feeds)
   (let* ((data (expand-file-name "data" elfeed-db-directory))
-         (dirs (directory-files data t "^[0-9a-z]\\{2\\}$"))
+         (dirs (directory-files data t "\\`[0-9a-z]\\{2\\}\\'"))
          (ids (cl-mapcan (lambda (d) (directory-files d nil nil t)) dirs))
          (table (make-hash-table :test 'equal)))
     (dolist (id ids)
