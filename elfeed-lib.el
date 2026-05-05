@@ -98,10 +98,9 @@ ALIGN should be a keyword :left or :right."
     (prog1 t
       (string-match-p regexp ""))))
 
-(defun elfeed-cleanup (name)
+(defsubst elfeed-cleanup (name)
   "Trim trailing and leading spaces and collapse multiple spaces in NAME string."
-  (let ((trim (replace-regexp-in-string "[\f\n\r\t\v ]+" " " (or name ""))))
-    (replace-regexp-in-string "^ +\\| +$" "" trim)))
+  (string-clean-whitespace (or name "")))
 
 (defun elfeed-parse-simple-iso-8601 (string)
   "Attempt to parse STRING as a simply formatted ISO 8601 date.
