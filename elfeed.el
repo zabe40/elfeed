@@ -366,7 +366,7 @@ URL identifies the feed and XML is the parsed content."
   "Parse an RSS AUTHOR element into an authors plist."
   (when author
     (let ((clean (elfeed-cleanup author)))
-      (if (string-match "^\\(.*\\) (\\([^)]+\\))$" clean)
+      (if (string-match "\\`\\(.*\\) (\\([^)]+\\))\\'" clean)
           (list (list :name (match-string 2 clean)
                       :email (match-string 1 clean)))
         (list (list :email clean))))))
