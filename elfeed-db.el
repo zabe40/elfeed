@@ -591,7 +591,7 @@ If STATS-P is true, return the space cleared in bytes."
              unless used-p
              do (elfeed-ref-delete (elfeed-ref--create :id id))
              finally (cl-loop for dir in dirs
-                              when (elfeed-directory-empty-p dir)
+                              when (directory-empty-p dir)
                               do (delete-directory dir)))))
 
 (defun elfeed-db-pack ()

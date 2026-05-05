@@ -118,17 +118,6 @@
             "\xbd\xb9\xb5\xe3\xd0\xc2\xce\xc5</x>")
     (should (equal (elfeed-xml-parse-region) '((x nil "百度科技焦点新闻"))))))
 
-(ert-deftest elfeed-directory-empty-p ()
-  (let ((empty (make-temp-file "empty" t))
-        (full (make-temp-file "full" t)))
-    (unwind-protect
-        (progn
-          (with-temp-file (expand-file-name "foo" full))
-          (should (elfeed-directory-empty-p empty))
-          (should-not (elfeed-directory-empty-p full)))
-      (delete-directory empty :recursive)
-      (delete-directory full  :recursive))))
-
 (ert-deftest elfeed-slurp-spit ()
   (let ((file (make-temp-file "spit"))
         (data (string 40 400 4000 40000)))

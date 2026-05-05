@@ -17,6 +17,9 @@
 (require 'xml)
 (require 'browse-url)
 
+(define-obsolete-function-alias 'elfeed-directory-empty-p
+  #'directory-empty-p "3.4.2")
+
 (define-obsolete-function-alias 'elfeed-libxml-supported-p
   #'libxml-available-p "3.4.2")
 
@@ -200,10 +203,6 @@ Uses coding system from XML encoding declaration."
             (insert (xml-escape-string sub))
           (elfeed-xml-unparse sub)))
       (insert (format "</%s>" tag)))))
-
-(defun elfeed-directory-empty-p (dir)
-  "Return non-nil if DIR is empty."
-  (null (cddr (directory-files dir))))
 
 (defun elfeed-slurp (file &optional literally)
   "Return the contents of FILE as a string.
