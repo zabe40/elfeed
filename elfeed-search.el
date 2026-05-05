@@ -75,9 +75,14 @@ live filter editing is exited."
 (defcustom elfeed-search-remain-on-entry nil
   "When non-nil, keep point at entry after performing a command.
 
-When nil, move to next entry."
+When nil, always move to next entry after a command.  The variable can
+be set to a list of symbols show, browse, tag and yank, such that point
+does not move after the listed operations.  Example:
+
+  (setq elfeed-search-remain-on-entry \\='(browse show yank))"
   :group 'elfeed
-  :type 'boolean)
+  :type '(choice (const nil) (const t)
+                 (repeat symbol)))
 
 (defcustom elfeed-search-clipboard-type 'PRIMARY
   "Selects the clipboard `elfeed-search-yank' should use.
@@ -161,6 +166,21 @@ When live editing the filter, it is bound to :live.")
   "-" #'elfeed-search-untag-all
   "<" #'elfeed-search-first-entry
   ">" #'elfeed-search-last-entry)
+
+(defun elfeed-search--remain-on-entry-p (action)
+  "Remain on current entry for ACTION?"
+  (and elfeed-search-remain-on-entry
+       (or (not (consp elfeed-search-remain-on-entry))
+           (memq action elfeed-search-remain-on-entry))))
+
+(defun elfeed-search--after-action (action)
+  "Possibly move to next entry after ACTION.
+Movement is configured by `elfeed-search-remain-on-entry'."
+  ;; Ignore region for the `show' action, like the related commands, which also
+  ;; ignore the region and show the entry at point only.
+  (when (and (or (eq action 'show) (not (use-region-p)))
+             (not (elfeed-search--remain-on-entry-p action)))
+    (forward-line)))
 
 (defun elfeed-search--intro-header ()
   "Return the header shown to new users."
@@ -878,8 +898,7 @@ the browser defined by `browse-url-secondary-browser-function'."
       ;; run in the elfeed buffer.
       (with-current-buffer (elfeed-search-buffer)
         (mapc #'elfeed-search-update-entry entries)
-        (unless (or elfeed-search-remain-on-entry (use-region-p))
-          (forward-line))))))
+        (elfeed-search--after-action 'browse)))))
 
 (defun elfeed-search-browse-url-secondary ()
   "Visit the current entry in your browser using the secondary browser."
@@ -901,8 +920,7 @@ the browser defined by `browse-url-secondary-browser-function'."
           (x-set-selection elfeed-search-clipboard-type links-str)))
       (message "Copied: %s" links-str)
       (mapc #'elfeed-search-update-entry entries)
-      (unless (or elfeed-search-remain-on-entry (use-region-p))
-        (forward-line)))))
+      (elfeed-search--after-action 'yank))))
 
 (defun elfeed-search-tag-all (tag)
   "Apply TAG to all selected entries."
@@ -911,8 +929,7 @@ the browser defined by `browse-url-secondary-browser-function'."
   (let ((entries (elfeed-search-selected)))
     (elfeed-tag entries tag)
     (mapc #'elfeed-search-update-entry entries)
-    (unless (or elfeed-search-remain-on-entry (use-region-p))
-      (forward-line))))
+    (elfeed-search--after-action 'tag)))
 
 (defun elfeed-search-untag-all (tag)
   "Remove TAG from all selected entries."
@@ -921,8 +938,7 @@ the browser defined by `browse-url-secondary-browser-function'."
   (let ((entries (elfeed-search-selected)))
     (elfeed-untag entries tag)
     (mapc #'elfeed-search-update-entry entries)
-    (unless (or elfeed-search-remain-on-entry (use-region-p))
-      (forward-line))))
+    (elfeed-search--after-action 'tag)))
 
 (defun elfeed-search-toggle-all (tag)
   "Toggle TAG on all selected entries."
@@ -936,8 +952,7 @@ the browser defined by `browse-url-secondary-browser-function'."
     (elfeed-tag entries-tag tag)
     (elfeed-untag entries-untag tag)
     (mapc #'elfeed-search-update-entry entries)
-    (unless (or elfeed-search-remain-on-entry (use-region-p))
-      (forward-line))))
+    (elfeed-search--after-action 'tag)))
 
 (defun elfeed-search-show-entry (entry)
   "Display the currently selected ENTRY in a buffer."
@@ -946,9 +961,10 @@ the browser defined by `browse-url-secondary-browser-function'."
   (when (elfeed-entry-p entry)
     (elfeed-untag entry 'unread)
     (elfeed-search-update-entry entry)
-    (unless elfeed-search-remain-on-entry
-      (forward-line)
-      (hl-line-highlight))
+    (elfeed-search--after-action 'show)
+    ;; Update hl-line overlay. This does not happen automatically, since
+    ;; `elfeed-show-entry' switches to another buffer.
+    (hl-line-highlight)
     ;; elfeed-show.el is required by elfeed.el at runtime.
     (declare-function elfeed-show-entry "elfeed-show")
     (elfeed-show-entry entry)))
