@@ -748,7 +748,7 @@ tags from."
                 (elfeed-db-get-all-tags))
               (user-error "No tags found")))
          (all-tags (mapcar #'symbol-name all-tags))
-         (initial (and (length= all-tags 1) (car all-tags)))
+         (initial (and entries (length= all-tags 1) (car all-tags)))
          (tags (if elfeed-search-completion
                    (completing-read-multiple
                     prompt
