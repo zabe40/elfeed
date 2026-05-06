@@ -663,17 +663,20 @@ Executing a filter in bytecode form is generally faster than
   (let (cache)
     (completion-table-dynamic
      (lambda (_str)
-       (let* ((beg (minibuffer-prompt-end))
-              (end (pos-eol))
-              (input
-              ;; Obtain input from the minibuffer to compute dynamic candidates.
-              ;; We cannot use _str since the argument is always empty for
-              ;; non-basic completion styles like substring or orderless.
-              (save-excursion
-                (goto-char end)
-                (when (re-search-backward "\\s-" beg 'noerror)
-                  (goto-char (min (1+ (point)) end)))
-                (buffer-substring-no-properties (point) end))))
+       (let ((input
+              (if-let* ((win (active-minibuffer-window)))
+                  (with-current-buffer (window-buffer win)
+                    ;; Obtain input from the minibuffer to compute dynamic
+                    ;; candidates.  We cannot use _str since the argument is
+                    ;; always empty for non-basic completion styles like
+                    ;; substring or orderless.
+                    (save-excursion
+                      (goto-char (point-max))
+                      (when (re-search-backward
+                             "\\s-" (minibuffer-prompt-end) 'noerror)
+                        (goto-char (min (1+ (point)) (point-max))))
+                      (buffer-substring-no-properties (point) (point-max))))
+                "")))
          (append
           ;; Dynamically computed @age candidates.
           (when (string-match-p "\\`@[0-9]+" input)
@@ -701,7 +704,8 @@ Executing a filter in bytecode form is generally faster than
 (defun elfeed-search--prompt (current)
   "Prompt for a new filter, starting with CURRENT."
   (dlet ((crm-separator " ")
-         (crm-prompt "%p"))
+         (crm-prompt "%p")
+         (completion-show-inline-help nil))
     (string-join
      (completing-read-multiple
       "Filter: "
