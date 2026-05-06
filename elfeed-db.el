@@ -51,8 +51,13 @@
 
 (require 'elfeed-lib)
 
-(defcustom elfeed-db-directory "~/.elfeed"
-  "Directory where elfeed will store its database."
+(defcustom elfeed-db-directory
+  (locate-user-emacs-file "elfeed" "~/.elfeed")
+  "Directory where elfeed will store its database.
+You may want to customize this setting in your user configuration.
+Elfeed uses a subdirectory of your Emacs configuration by default, e.g.,
+~/.config/emacs/elfeed, in order to keep the user home clean.  But if an
+old ~/.elfeed directory is present, it will be used instead."
   :group 'elfeed
   :type 'directory)
 
