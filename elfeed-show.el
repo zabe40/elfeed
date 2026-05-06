@@ -375,14 +375,21 @@ All attachments are saved in the chosen directory."
 
 (defun elfeed--download-enclosure (url path)
   "Download asynchronously the enclosure from URL to PATH."
-  (if (require 'async nil :noerror)
-      (with-no-warnings
-        (async-start
-         (lambda ()
-           (url-copy-file url path t))
-         (lambda (_)
-           (message "%s downloaded" url))))
-    (url-copy-file url path t)))
+  (if elfeed-use-curl
+      (make-process
+       :name "elfeed-curl"
+       :command
+       (list elfeed-curl-program-name
+             "--disable" "--fail" "--location" "--silent"
+             "--user-agent" elfeed-user-agent "-o" (expand-file-name path)
+             url)
+       :sentinel
+       (lambda (_proc status)
+         (if (string-prefix-p "finished" status)
+             (message "Enclosure download %s finished (%s)" path url)
+           (message "Enclosure download %s failed (%s)" path url))))
+    (url-copy-file url path t))
+  nil)
 
 (defun elfeed--get-enclosure-num (prompt entry &optional multi)
   "Ask the user with PROMPT for an enclosure number for ENTRY.
