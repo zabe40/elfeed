@@ -129,12 +129,6 @@ When live editing the filter, it is bound to :live.")
   (interactive nil elfeed-search-mode)
   (elfeed-search-untag-all 'unread))
 
-(defun elfeed-search-quit-window ()
-  "Save the database, then `quit-window'."
-  (interactive nil elfeed-search-mode)
-  (elfeed-db-save)
-  (quit-window))
-
 (defun elfeed-search-last-entry ()
   "Place point on last entry."
   (interactive nil elfeed-search-mode)
@@ -149,7 +143,6 @@ When live editing the filter, it is bound to :live.")
 (defvar-keymap elfeed-search-mode-map
   :doc "Keymap for `elfeed-search-mode'."
   :parent special-mode-map
-  "q" #'elfeed-search-quit-window
   "G" #'elfeed-search-fetch
   "RET" #'elfeed-search-show-entry
   "s" #'elfeed-search-live-filter
@@ -267,6 +260,7 @@ Movement is configured by `elfeed-search-remain-on-entry'."
   (add-hook 'kill-buffer-hook #'elfeed-db-save t 'local)
   (add-hook 'window-size-change-functions #'elfeed-search--resize nil 'local)
   (add-hook 'elfeed-db-unload-hook #'elfeed-search--unload)
+  (add-hook 'quit-window-hook 'elfeed-db-save nil 'local)
   (elfeed-search-update :force))
 
 (defun elfeed-search-buffer ()
@@ -1079,6 +1073,8 @@ state of the db for when `desktop-auto-save-timeout' is enabled."
 ;;;###autoload
 (add-to-list 'desktop-buffer-mode-handlers
              '(elfeed-search-mode . elfeed-search-desktop-restore))
+
+(define-obsolete-function-alias 'elfeed-search-quit-window 'quit-window "3.4.2")
 
 (provide 'elfeed-search)
 ;;; elfeed-search.el ends here
