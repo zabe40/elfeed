@@ -525,6 +525,7 @@ Prompts for ENCLOSURE-INDEX when called interactively."
          (position (bookmark-get-position record)))
     (elfeed-show-entry entry)
     (goto-char position)))
+(put 'elfeed-show-bookmark-handler 'bookmark-handler-type "Elfeed Entry")
 
 (defun elfeed-show-bookmark-make-record ()
   "Save the current position and the entry into a bookmark."

@@ -1039,6 +1039,7 @@ Sets the :title key of the feed's metadata.  See `elfeed-meta'."
   "Jump to an elfeed-search bookmark RECORD."
   (elfeed)
   (elfeed-search-set-filter (bookmark-prop-get record 'location)))
+(put 'elfeed-search-bookmark-handler 'bookmark-handler-type "Elfeed Search")
 
 (defun elfeed-search-bookmark-make-record ()
   "Return a bookmark record for the current elfeed-search buffer."
