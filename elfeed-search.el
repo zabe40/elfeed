@@ -941,38 +941,45 @@ the browser defined by `browse-url-secondary-browser-function'."
       (mapc #'elfeed-search-update-entry entries)
       (elfeed-search--after-action 'yank))))
 
-(defun elfeed-search--prompt-tag ()
-  "Prompt for tag in the minibuffer."
-  (let ((tag (read-from-minibuffer "Tag: ")))
-    (when (equal tag "") (user-error "No tag given!"))
-    (intern tag)))
+(defun elfeed-search--prompt-tags (prompt &optional tags)
+  "Prompt for tags in the minibuffer.
+PROMPT is the prompt string and TAGS is an optional tags list to
+restrict completion."
+  (setq tags (completing-read-multiple
+              prompt
+              (mapcar #'symbol-name (or tags (elfeed-db-get-all-tags)))
+              nil (consp tags)))
+  (unless tags (user-error "No tags given!"))
+  (mapcar #'intern tags))
 
-(defun elfeed-search-tag-all (tag)
-  "Apply TAG to all selected entries."
-  (interactive (list (elfeed-search--prompt-tag)) elfeed-search-mode)
+(defun elfeed-search-tag-all (&rest tags)
+  "Apply TAGS to all selected entries."
+  (interactive (elfeed-search--prompt-tags "Tag: ") elfeed-search-mode)
   (let ((entries (elfeed-search-selected)))
-    (elfeed-tag entries tag)
+    (apply #'elfeed-tag entries tags)
     (mapc #'elfeed-search-update-entry entries)
     (elfeed-search--after-action 'tag)))
 
-(defun elfeed-search-untag-all (tag)
-  "Remove TAG from all selected entries."
-  (interactive (list (elfeed-search--prompt-tag)) elfeed-search-mode)
+(defun elfeed-search-untag-all (&rest tags)
+  "Remove TAGS from all selected entries."
+  (interactive (elfeed-search--prompt-tags "Untag: ") elfeed-search-mode)
   (let ((entries (elfeed-search-selected)))
-    (elfeed-untag entries tag)
+    (apply #'elfeed-untag entries tags)
     (mapc #'elfeed-search-update-entry entries)
     (elfeed-search--after-action 'tag)))
 
-(defun elfeed-search-toggle-all (tag)
-  "Toggle TAG on all selected entries."
-  (interactive (list (elfeed-search--prompt-tag)) elfeed-search-mode)
-  (let ((entries (elfeed-search-selected)) entries-tag entries-untag)
-    (cl-loop for entry in entries
-             when (elfeed-tagged-p tag entry)
-             do (push entry entries-untag)
-             else do (push entry entries-tag))
-    (elfeed-tag entries-tag tag)
-    (elfeed-untag entries-untag tag)
+(defun elfeed-search-toggle-all (&rest tags)
+  "Toggle TAGS on all selected entries."
+  (interactive (elfeed-search--prompt-tags "Toggle: ") elfeed-search-mode)
+  (let ((entries (elfeed-search-selected)))
+    (dolist (tag tags)
+      (let (entries-tag entries-untag)
+        (cl-loop for entry in entries
+                 when (elfeed-tagged-p tag entry)
+                 do (push entry entries-untag)
+                 else do (push entry entries-tag))
+        (elfeed-tag entries-tag tag)
+        (elfeed-untag entries-untag tag)))
     (mapc #'elfeed-search-update-entry entries)
     (elfeed-search--after-action 'tag)))
 

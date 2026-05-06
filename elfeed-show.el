@@ -329,7 +329,7 @@ the browser defined by `browse-url-secondary-browser-function'."
 
 (defun elfeed-show-tag (&rest tags)
   "Add TAGS to the displayed entry."
-  (interactive (list (elfeed-search--prompt-tag)) elfeed-show-mode)
+  (interactive (elfeed-search--prompt-tags "Tag: ") elfeed-show-mode)
   (let ((entry elfeed-show-entry))
     (apply #'elfeed-tag entry tags)
     (with-current-buffer (elfeed-search-buffer)
@@ -338,11 +338,11 @@ the browser defined by `browse-url-secondary-browser-function'."
 
 (defun elfeed-show-untag (&rest tags)
   "Remove TAGS from the displayed entry."
-  (interactive (let* ((tags (elfeed-entry-tags elfeed-show-entry))
-                      (names (mapcar #'symbol-name tags))
-                      (select (completing-read "Untag: " names nil :match)))
-                 (list (intern select)))
-               elfeed-show-mode)
+  (interactive
+   (elfeed-search--prompt-tags "Untag: "
+                               (or (elfeed-entry-tags elfeed-show-entry)
+                                   (user-error "Entry does not have tags")))
+   elfeed-show-mode)
   (let ((entry elfeed-show-entry))
     (apply #'elfeed-untag entry tags)
     (with-current-buffer (elfeed-search-buffer)
