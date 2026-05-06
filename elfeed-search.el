@@ -972,22 +972,31 @@ the browser defined by `browse-url-secondary-browser-function'."
     (declare-function elfeed-show-entry "elfeed-show")
     (elfeed-show-entry entry)))
 
-(defun elfeed-search-set-entry-title (title)
+(defun elfeed-search-set-entry-title (&optional title)
   "Manually set TITLE for the entry under point.
 Sets the :title key of the entry's metadata.  See `elfeed-meta'."
-  (interactive "sEntry title: " elfeed-search-mode)
+  (interactive nil elfeed-search-mode)
   (let ((entry (or (elfeed-search-selected :ignore-region)
                    (user-error "No entry selected!"))))
+    (unless title
+      (setq title (read-from-minibuffer "Entry title: "
+                                        (or (elfeed-meta entry :title)
+                                            (elfeed-entry-title entry)))))
     (setf (elfeed-meta entry :title) title)
     (elfeed-search-update-entry entry)))
 
-(defun elfeed-search-set-feed-title (title)
+(defun elfeed-search-set-feed-title (&optional title)
   "Manually set TITLE for the feed belonging to the entry under point.
 Sets the :title key of the feed's metadata.  See `elfeed-meta'."
-  (interactive "sFeed title: " elfeed-search-mode)
-  (let ((entry (or (elfeed-search-selected :ignore-region)
-                   (user-error "No entry selected!"))))
-    (setf (elfeed-meta (elfeed-entry-feed entry) :title) title)
+  (interactive nil elfeed-search-mode)
+  (let ((feed (elfeed-entry-feed
+               (or (elfeed-search-selected :ignore-region)
+                   (user-error "No entry selected!")))))
+    (unless title
+      (setq title (read-from-minibuffer "Feed title: "
+                                        (or (elfeed-meta feed :title)
+                                            (elfeed-feed-title feed)))))
+    (setf (elfeed-meta feed :title) title)
     (elfeed-search-update :force)))
 
 ;; Live Filters
