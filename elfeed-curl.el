@@ -459,14 +459,13 @@ results will not."
 (defun elfeed-curl--request-key (url headers method data)
   "Compute request key for URL, HEADERS, METHOD and DATA.
 The goal is to fetch URLs with matching keys at the same time."
-  (unless (listp url)
-    (let* ((urlobj (url-generic-parse-url url)))
-      (list (url-type urlobj)
-            (url-host urlobj)
-            (url-portspec urlobj)
-            headers
-            method
-            data))))
+  (let ((urlobj (url-generic-parse-url url)))
+    (list (url-type urlobj)
+          (url-host urlobj)
+          (url-portspec urlobj)
+          headers
+          method
+          data)))
 
 (defun elfeed-curl--queue-consolidate (queue-in)
   "Group compatible requests from QUEUE-IN together and return a new queue.
@@ -482,7 +481,7 @@ curl invocation."
             ;; Already-consolidated entry, pass through unchanged to
             ;; avoid wrapping its URL list in another list layer.
             (push entry queue-out)
-          (let* ((key (elfeed-curl--request-key url headers method data)))
+          (let ((key (elfeed-curl--request-key url headers method data)))
             (push key keys)
             (push entry (gethash key table nil))))))
     (dolist (key (nreverse keys))
