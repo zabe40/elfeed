@@ -415,13 +415,12 @@ The customization `elfeed-search-date-format' sets the formatting."
          (window (get-buffer-window))
          (title-width (- (if window (window-width window) (frame-width))
                          10 elfeed-search-trailing-width))
-         (title-column (truncate-string-to-width
-                        title
-                        (elfeed-clamp
-                         elfeed-search-title-min-width
-                         title-width
-                         elfeed-search-title-max-width)
-                        nil ?\s t)))
+         (title-column (elfeed-format-column
+                        title (elfeed-clamp
+                               elfeed-search-title-min-width
+                               title-width
+                               elfeed-search-title-max-width)
+                        :left)))
     (insert (propertize date 'face 'elfeed-search-date-face) " "
             (propertize title-column 'face title-faces 'kbd-help title))
     (when feed-title
