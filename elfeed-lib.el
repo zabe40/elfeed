@@ -264,17 +264,11 @@ If LITERALLY is non-nil return the content literally."
 
 (defun elfeed-clipboard-get ()
   "Try to get a sensible value from the system clipboard.
-On systems running X, it will try to use the PRIMARY selection
-first, then fall back onto the standard clipboard like other
-systems."
-  (when-let* ((str (or (and (fboundp 'x-get-selection)
-                            (funcall 'x-get-selection))
-                       (and (functionp interprogram-paste-function)
-                            (funcall interprogram-paste-function))
-                       (and (fboundp 'w32-get-clipboard-data)
-                            (funcall 'w32-get-clipboard-data))
-                       (ignore-errors
-                         (current-kill 0 :non-destructively)))))
+It will try the `interprogram-paste-function' first and otherwise fall
+back to `current-kill'."
+  (when-let* ((str (or (and (functionp interprogram-paste-function)
+                            (funcall interprogram-paste-function)
+                       (ignore-errors (current-kill 0 :non-destructively))))))
     (substring-no-properties str)))
 
 (defun elfeed-get-link-at-point ()
