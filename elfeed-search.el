@@ -180,15 +180,25 @@ When live editing the filter, it is bound to :live.")
     ["Mark as unread" elfeed-search-tag-all-unread]
     ["Mark as read" elfeed-search-untag-all-unread]
     "--"
-    ["Set feed title" elfeed-search-set-feed-title]
-    ["Set entry title" elfeed-search-set-entry-title]
-    "--"
     ["Live filter" elfeed-search-live-filter]
-    ["Set filter" elfeed-search-set-filter]
-    ["Clear filter" elfeed-search-clear-filter]
+    ("Filter"
+     ["Set filter" elfeed-search-set-filter]
+     ["Clear filter" elfeed-search-clear-filter])
     "--"
-    ["Fetch" elfeed-search-fetch]
-    ["Fetch visible" elfeed-search-fetch-visible]
+    ["Fetch all" elfeed-search-fetch]
+    ("Fetch"
+     ["Fetch visible" elfeed-search-fetch-visible]
+     ["Fetch feed" elfeed-update-feed])
+    "--"
+    ("Set title"
+     ["Set feed title" elfeed-search-set-feed-title]
+     ["Set entry title" elfeed-search-set-entry-title])
+    "--"
+    ("Maintenance"
+     ["Apply auto tags" elfeed-apply-autotags-now]
+     ["Apply hooks" elfeed-apply-hooks-now]
+     ["Compact database" elfeed-db-compact]
+     ["Unjam queue" elfeed-unjam])
     "--"
     ["Revert buffer" revert-buffer]
     ["Quit window" quit-window]

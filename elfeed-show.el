@@ -103,10 +103,6 @@ Called without arguments."
     ["Browse secondary" elfeed-show-visit-secondary]
     ["Copy URL" elfeed-show-yank]
     "--"
-    ["Save enclosure" elfeed-show-save-enclosure]
-    ["Play enclosure" elfeed-show-play-enclosure]
-    ["Add enclosure to playlist" elfeed-show-add-enclosure-to-playlist]
-    "--"
     ["Add tag" elfeed-show-tag]
     ["Remove tag" elfeed-show-untag]
     ["Mark as unread" elfeed-show-tag-unread]
@@ -115,6 +111,11 @@ Called without arguments."
     ["Previous entry" elfeed-show-prev]
     "--"
     ["New live filter" elfeed-show-live-filter]
+    "--"
+    ("Enclosure"
+     ["Save enclosure" elfeed-show-save-enclosure]
+     ["Play enclosure" elfeed-show-play-enclosure]
+     ["Add enclosure to playlist" elfeed-show-add-enclosure-to-playlist])
     "--"
     ["Revert buffer" revert-buffer]
     ["Quit window" quit-window]
