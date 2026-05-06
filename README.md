@@ -116,6 +116,7 @@ Multiple entries are selected at once by using an active region.
 
  * <kbd>RET</kbd>: view selected entry in a buffer
  * <kbd>b</kbd>: open selected entries in your browser (`browse-url`)
+ * <kbd>B</kbd>: open selected entries in your secondary browser
  * <kbd>y</kbd>: copy selected entries URL to the clipboard
  * <kbd>r</kbd>: mark selected entries as read
  * <kbd>u</kbd>: mark selected entries as unread
