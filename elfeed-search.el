@@ -735,20 +735,32 @@ Executing a filter in bytecode form is generally faster than
     (read-from-minibuffer
      "Filter: " current nil nil 'elfeed-search-filter-history)))
 
-(defun elfeed-search--prompt-tags (prompt &optional tags)
+(defun elfeed-search--prompt-tags (prompt &optional entries)
   "Prompt for tags in the minibuffer.
-PROMPT is the prompt string and TAGS is an optional tags list to
-restrict completion."
-  (setq tags (if elfeed-search-completion
-                 (completing-read-multiple
-                  prompt
-                  (completion-table-with-metadata
-                   (mapcar #'symbol-name (or tags (elfeed-db-get-all-tags)))
-                   '((category . elfeed-tag)))
-                  nil (consp tags))
-               (split-string (read-from-minibuffer prompt) "[ \t]*,[ \t]*" t)))
-  (unless tags (user-error "No tags given!"))
-  (mapcar #'intern tags))
+PROMPT is the prompt string and ENTRIES is a list of entries to take the
+tags from."
+  (let* ((all-tags
+          (or (if entries
+                  (delete-dups
+                   (apply #'append
+                          (mapcar #'elfeed-entry-tags
+                                  (ensure-list entries))))
+                (elfeed-db-get-all-tags))
+              (user-error "No tags found")))
+         (all-tags (mapcar #'symbol-name all-tags))
+         (initial (and (length= all-tags 1) (car all-tags)))
+         (tags (if elfeed-search-completion
+                   (completing-read-multiple
+                    prompt
+                    (completion-table-with-metadata
+                     all-tags
+                     '((category . elfeed-tag)))
+                    nil entries nil initial)
+                 (split-string (read-from-minibuffer prompt initial)
+                               "[ \t]*,[ \t]*" t))))
+    (unless tags
+      (user-error "No tags given!"))
+    (mapcar #'intern tags)))
 
 (defun elfeed-search-clear-filter ()
   "Reset the search filter.
@@ -1034,7 +1046,9 @@ the browser defined by `browse-url-secondary-browser-function'."
 
 (defun elfeed-search-untag-all (&rest tags)
   "Remove TAGS from all selected entries."
-  (interactive (elfeed-search--prompt-tags "Untag: ") elfeed-search-mode)
+  (interactive
+   (elfeed-search--prompt-tags "Untag: " (elfeed-search-selected))
+   elfeed-search-mode)
   (let ((entries (elfeed-search-selected)))
     (apply #'elfeed-untag entries tags)
     (mapc #'elfeed-search-update-entry entries)

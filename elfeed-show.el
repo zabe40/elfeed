@@ -340,9 +340,7 @@ the browser defined by `browse-url-secondary-browser-function'."
 (defun elfeed-show-untag (&rest tags)
   "Remove TAGS from the displayed entry."
   (interactive
-   (elfeed-search--prompt-tags "Untag: "
-                               (or (elfeed-entry-tags elfeed-show-entry)
-                                   (user-error "Entry does not have tags")))
+   (elfeed-search--prompt-tags "Untag: " elfeed-show-entry)
    elfeed-show-mode)
   (let ((entry elfeed-show-entry))
     (apply #'elfeed-untag entry tags)
