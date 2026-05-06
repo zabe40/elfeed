@@ -513,7 +513,7 @@ curl invocation."
           elfeed-curl-queue
           (elfeed-curl--queue-consolidate elfeed-curl-queue)))
   (while (and (< elfeed-curl-queue-active elfeed-curl-max-connections)
-              (> (length elfeed-curl-queue) 0))
+              elfeed-curl-queue)
     (cl-destructuring-bind (url cb headers method data) (pop elfeed-curl-queue)
       (elfeed-log 'debug "retrieve %s" url)
       (incf elfeed-curl-queue-active 1)

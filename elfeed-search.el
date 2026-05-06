@@ -1142,7 +1142,7 @@ Sets the :title key of the feed's metadata.  See `elfeed-meta'."
                (elfeed-search-filter (concat limiter current-filter)))
           (elfeed-search-update :force)
           (setf elfeed-search-filter-overflowing
-                (= (length elfeed-search-entries) height)))))))
+                (length= elfeed-search-entries height)))))))
 
 (defun elfeed-search-live-filter ()
   "Filter the elfeed-search buffer as the filter is written."
