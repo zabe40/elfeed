@@ -974,9 +974,8 @@ the browser defined by `browse-url-secondary-browser-function'."
   "Manually set TITLE for the entry under point.
 Sets the :title key of the entry's metadata.  See `elfeed-meta'."
   (interactive "sEntry title: " elfeed-search-mode)
-  (let ((entry (elfeed-search-selected :ignore-region)))
-    (unless entry
-      (error "No entry selected!"))
+  (let ((entry (or (elfeed-search-selected :ignore-region)
+                   (user-error "No entry selected!"))))
     (setf (elfeed-meta entry :title) title)
     (elfeed-search-update-entry entry)))
 
@@ -984,13 +983,10 @@ Sets the :title key of the entry's metadata.  See `elfeed-meta'."
   "Manually set TITLE for the feed belonging to the entry under point.
 Sets the :title key of the feed's metadata.  See `elfeed-meta'."
   (interactive "sFeed title: " elfeed-search-mode)
-  (let ((entry (elfeed-search-selected :ignore-region)))
-    (unless entry
-      (error "No entry selected!"))
-    (let ((feed (elfeed-entry-feed entry)))
-      (setf (elfeed-meta feed :title) title)
-      (dolist (to-fix elfeed-search-entries)
-        (elfeed-search-update-entry to-fix)))))
+  (let ((entry (or (elfeed-search-selected :ignore-region)
+                   (user-error "No entry selected!"))))
+    (setf (elfeed-meta (elfeed-entry-feed entry) :title) title)
+    (elfeed-search-update :force)))
 
 ;; Live Filters
 
