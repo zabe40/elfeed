@@ -513,22 +513,20 @@ Prompts for ENCLOSURE-INDEX when called interactively."
   (interactive (list (elfeed--enclosure-maybe-prompt-index elfeed-show-entry))
                elfeed-show-mode)
   (elfeed-show-add-enclosure-to-playlist enclosure-index)
-  (with-no-warnings
-    (with-current-emms-playlist
-      (save-excursion
-        (emms-playlist-last)
-        (emms-playlist-mode-play-current-track)))))
+  (eval '(with-current-emms-playlist
+          (save-excursion
+            (emms-playlist-last)
+            (emms-playlist-mode-play-current-track)))))
 
 (defun elfeed-show-add-enclosure-to-playlist (enclosure-index)
   "Add enclosure number ENCLOSURE-INDEX to current EMMS playlist.
 Prompts for ENCLOSURE-INDEX when called interactively."
-
   (interactive (list (elfeed--enclosure-maybe-prompt-index elfeed-show-entry))
                elfeed-show-mode)
-  (require 'emms) ;; optional
-  (with-no-warnings ;; due to lazy (require )
-    (emms-add-url   (car (elt (elfeed-entry-enclosures elfeed-show-entry)
-                              (- enclosure-index 1))))))
+  (require 'emms)
+  (declare-function emms-add-url "emms")
+  (emms-add-url (car (elt (elfeed-entry-enclosures elfeed-show-entry)
+                          (- enclosure-index 1)))))
 
 (defun elfeed-show-next-link ()
   "Skip to the next link, exclusive of the Link header."
