@@ -660,12 +660,32 @@ Executing a filter in bytecode form is generally faster than
 
 (defun elfeed-search--prompt (current)
   "Prompt for a new filter, starting with CURRENT."
-  (read-from-minibuffer
-   "Filter: "
-   (if (or (string= "" current) (string-suffix-p " " current))
-       current
-     (concat current " "))
-   nil nil 'elfeed-search-filter-history))
+  (dlet ((crm-separator " ")
+         (crm-prompt "%p")
+         ;; Require basic completion because of `completion-table-dynamic'.
+         (completion-styles '(basic)))
+    (string-join
+     (completing-read-multiple
+      "Filter: "
+      (let ((tags (elfeed-db-get-all-tags)))
+        (completion-table-dynamic
+         (lambda (str)
+           (cond
+            ((string-match-p "^[+-]" str)
+             (mapcar (lambda (x) (format "%c%s" (aref str 0) x)) tags))
+            ((string-match-p "@[0-9]+" str)
+             (let* ((n (string-to-number (substring str 1)))
+                    (p (if (= n 1) "" "s")))
+               (list (format "@%d-day%s-ago" n p)
+                     (format "@%d-week%s-ago" n p)
+                     (format "@%d-month%s-ago" n p)
+                     (format "@%d-year%s-ago" n p))))))))
+      nil nil
+      (if (or (equal "" current) (string-suffix-p " " current))
+          current
+        (concat current " "))
+      'elfeed-search-filter-history)
+     " ")))
 
 (defun elfeed-search-clear-filter ()
   "Reset the search filter.
