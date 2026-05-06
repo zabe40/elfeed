@@ -797,13 +797,12 @@ directly.  Instead use `elfeed-search-update'."
               (funcall elfeed-search-print-entry-function entry)
               (insert "\n"))
             (setf elfeed-search-last-update (float-time))))
-        (when (zerop (buffer-size))
-          ;; If nothing changed, force a header line update
-          (force-mode-line-update))
         (setq list-buffers-directory elfeed-search-filter)
         ;; Highlighting gets lost due to debouncing.
         (hl-line-highlight)
-        (run-hooks 'elfeed-search-update-hook)))))
+        (run-hooks 'elfeed-search-update-hook))
+      ;; Always force a header line update
+      (force-mode-line-update))))
 
 (defun elfeed-search--update-force (&rest _)
   "Call `elfeed-search-update' with argument :force.
