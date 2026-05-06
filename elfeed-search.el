@@ -663,16 +663,17 @@ Executing a filter in bytecode form is generally faster than
   (let (cache)
     (completion-table-dynamic
      (lambda (_str)
-       (let ((input
+       (let* ((beg (minibuffer-prompt-end))
+              (end (pos-eol))
+              (input
               ;; Obtain input from the minibuffer to compute dynamic candidates.
               ;; We cannot use _str since the argument is always empty for
               ;; non-basic completion styles like substring or orderless.
               (save-excursion
-                (goto-char (point-max))
-                (when (re-search-backward "\\s-" (minibuffer-prompt-end)
-                                          'noerror)
-                  (goto-char (min (1+ (point)) (point-max))))
-                (buffer-substring-no-properties (point) (pos-eol)))))
+                (goto-char end)
+                (when (re-search-backward "\\s-" beg 'noerror)
+                  (goto-char (min (1+ (point)) end)))
+                (buffer-substring-no-properties (point) end))))
          (append
           ;; Dynamically computed @age candidates.
           (when (string-match-p "\\`@[0-9]+" input)
