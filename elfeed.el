@@ -510,7 +510,11 @@ Only a list of strings will be returned."
 
 (defun elfeed-update-feed (url)
   "Update a specific feed identified by URL."
-  (interactive (list (completing-read "Feed: " (elfeed-feed-list))))
+  (interactive (list (completing-read
+                      "Feed: "
+                      (completion-table-with-metadata
+                       (elfeed-feed-list)
+                       '((category . url))))))
   (unless elfeed--inhibit-update-init-hooks
     (run-hooks 'elfeed-update-init-hooks))
   (elfeed-with-fetch url

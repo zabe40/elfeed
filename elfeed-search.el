@@ -676,58 +676,60 @@ Executing a filter in bytecode form is generally faster than
 (defun elfeed-search--completion-table ()
   "Completion table for the search filter."
   (let (cache)
-    (completion-table-dynamic
-     (lambda (_str)
-       (let ((input
-              (if-let* ((win (active-minibuffer-window)))
-                  (with-current-buffer (window-buffer win)
-                    ;; Obtain input from the minibuffer to compute dynamic
-                    ;; candidates.  We cannot use _str since the argument is
-                    ;; always empty for non-basic completion styles like
-                    ;; substring or orderless.
-                    (save-excursion
-                      (goto-char (point-max))
-                      (when (re-search-backward
-                             "\\s-" (minibuffer-prompt-end) 'noerror)
-                        (goto-char (min (1+ (point)) (point-max))))
-                      (buffer-substring-no-properties (point) (point-max))))
-                "")))
-         (append
-          ;; Dynamically computed @age candidates.
-          (when (string-match-p "\\`@[0-9]+" input)
-            (let* ((n (string-to-number (substring input 1)))
-                   (p (if (= n 1) "" "s")))
-              (mapcar (lambda (x) (format "@%d-%s%s-ago" n x p))
-                      '(hour day week month year))))
-          ;; Cached, but static candidates, not depending on prefix.
-          (unless (equal input "")
-            (with-memoization cache
-              (delete-dups
-               (nconc
-                ;; +tag and -tag candidate strings
-                (mapcan
-                 (lambda (x) (list (format "+%s" x) (format "-%s" x)))
-                 (elfeed-db-get-all-tags))
-                ;; Old words from history
-                (mapcan
-                 (lambda (h)
-                   (delq nil
-                         (mapcar (lambda (x) (and (length> x 1) x))
-                                 (split-string h))))
-                 elfeed-search-filter-history)))))))))))
+    (lambda (_str)
+      (let ((input
+             (if-let* ((win (active-minibuffer-window)))
+                 (with-current-buffer (window-buffer win)
+                   ;; Obtain input from the minibuffer to compute dynamic
+                   ;; candidates.  We cannot use _str since the argument is
+                   ;; always empty for non-basic completion styles like
+                   ;; substring or orderless.
+                   (save-excursion
+                     (goto-char (point-max))
+                     (when (re-search-backward
+                            "\\s-" (minibuffer-prompt-end) 'noerror)
+                       (goto-char (min (1+ (point)) (point-max))))
+                     (buffer-substring-no-properties (point) (point-max))))
+               "")))
+        (append
+         ;; Dynamically computed @age candidates.
+         (when (string-match-p "\\`@[0-9]+" input)
+           (let* ((n (string-to-number (substring input 1)))
+                  (p (if (= n 1) "" "s")))
+             (mapcar (lambda (x) (format "@%d-%s%s-ago" n x p))
+                     '(hour day week month year))))
+         ;; Cached, but static candidates, not depending on prefix.
+         (unless (equal input "")
+           (with-memoization cache
+             (delete-dups
+              (nconc
+               ;; +tag and -tag candidate strings
+               (mapcan
+                (lambda (x) (list (format "+%s" x) (format "-%s" x)))
+                (elfeed-db-get-all-tags))
+               ;; Old words from history
+               (mapcan
+                (lambda (h)
+                  (delq nil
+                        (mapcar (lambda (x) (and (length> x 1) x))
+                                (split-string h))))
+                elfeed-search-filter-history))))))))))
 
 (defun elfeed-search--prompt (current)
   "Prompt for a new filter, starting with CURRENT."
   (unless (or (equal "" current) (string-suffix-p " " current))
     (setq current (concat current " ")))
   (if elfeed-search-completion
-      (dlet ((crm-separator " ")
+      (dlet ((crm-separator "[ \t]+")
              (crm-prompt "%p")
              (completion-show-inline-help nil))
         (string-join
          (completing-read-multiple
           "Filter: "
-          (elfeed-search--completion-table)
+          (completion-table-with-metadata
+           (completion-table-dynamic
+            (elfeed-search--completion-table))
+           '((category . elfeed-search)))
           nil nil current 'elfeed-search-filter-history)
          " "))
     (read-from-minibuffer
@@ -740,7 +742,9 @@ restrict completion."
   (setq tags (if elfeed-search-completion
                  (completing-read-multiple
                   prompt
-                  (mapcar #'symbol-name (or tags (elfeed-db-get-all-tags)))
+                  (completion-table-with-metadata
+                   (mapcar #'symbol-name (or tags (elfeed-db-get-all-tags)))
+                   '((category . elfeed-tag)))
                   nil (consp tags))
                (split-string (read-from-minibuffer prompt) "[ \t]*,[ \t]*" t)))
   (unless tags (user-error "No tags given!"))
