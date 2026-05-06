@@ -7,7 +7,7 @@
 ;; URL: https://github.com/emacs-elfeed/elfeed
 ;; Version: 3.4.2
 ;; Package-Requires: ((emacs "28.1") (compat "31"))
-;; Keywords: network, hypermedia
+;; Keywords: network, comm, hypermedia
 
 ;;; Commentary:
 
@@ -27,6 +27,7 @@
 
 (defgroup elfeed ()
   "An Emacs web feed reader."
+  :group 'web
   :group 'comm)
 
 (defconst elfeed-version "3.4.2")
