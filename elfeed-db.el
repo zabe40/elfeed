@@ -481,10 +481,9 @@ Return DEFAULT if unavailable."
 
 (defun elfeed-ref--file (ref)
   "Determine the storage filename for REF."
-  (let* ((id (elfeed-ref-id ref))
-         (root (expand-file-name "data" elfeed-db-directory))
-         (subdir (expand-file-name (substring id 0 2) root)))
-    (expand-file-name id subdir)))
+  (let ((id (elfeed-ref-id ref)))
+    (file-name-concat (expand-file-name "data" elfeed-db-directory)
+                      (substring id 0 2) id)))
 
 (cl-defun elfeed-ref-archive-filename (&optional (suffix ""))
   "Return the base filename of the archive files with optional SUFFIX."
