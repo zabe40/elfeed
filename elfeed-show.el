@@ -324,10 +324,7 @@ the browser defined by `browse-url-secondary-browser-function'."
   (interactive nil elfeed-show-mode)
   (when-let* ((link (elfeed-entry-link elfeed-show-entry)))
     (kill-new link)
-    (if (fboundp 'gui-set-selection)
-        (gui-set-selection 'PRIMARY link)
-      (with-no-warnings
-        (x-set-selection 'PRIMARY link)))
+    (gui-set-selection 'PRIMARY link)
     (message "Yanked: %s" link)))
 
 (defun elfeed-show-tag (&rest tags)

@@ -936,10 +936,7 @@ the browser defined by `browse-url-secondary-browser-function'."
     (when entries
       (elfeed-untag entries 'unread)
       (kill-new links-str)
-      (if (fboundp 'gui-set-selection)
-          (gui-set-selection elfeed-search-clipboard-type links-str)
-        (with-no-warnings
-          (x-set-selection elfeed-search-clipboard-type links-str)))
+      (gui-set-selection elfeed-search-clipboard-type links-str)
       (message "Copied: %s" links-str)
       (mapc #'elfeed-search-update-entry entries)
       (elfeed-search--after-action 'yank))))
