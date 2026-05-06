@@ -162,6 +162,8 @@ When live editing the filter, it is bound to :live.")
   "r" #'elfeed-search-untag-all-unread
   "n" #'next-line
   "p" #'previous-line
+  "t" #'elfeed-search-set-entry-title
+  "T" #'elfeed-search-set-feed-title
   "+" #'elfeed-search-tag-all
   "-" #'elfeed-search-untag-all
   "<" #'elfeed-search-first-entry
@@ -971,7 +973,7 @@ the browser defined by `browse-url-secondary-browser-function'."
 (defun elfeed-search-set-entry-title (title)
   "Manually set TITLE for the entry under point.
 Sets the :title key of the entry's metadata.  See `elfeed-meta'."
-  (interactive "sTitle: "elfeed-search-mode)
+  (interactive "sEntry title: " elfeed-search-mode)
   (let ((entry (elfeed-search-selected :ignore-region)))
     (unless entry
       (error "No entry selected!"))
@@ -981,7 +983,7 @@ Sets the :title key of the entry's metadata.  See `elfeed-meta'."
 (defun elfeed-search-set-feed-title (title)
   "Manually set TITLE for the feed belonging to the entry under point.
 Sets the :title key of the feed's metadata.  See `elfeed-meta'."
-  (interactive "sTitle: " elfeed-search-mode)
+  (interactive "sFeed title: " elfeed-search-mode)
   (let ((entry (elfeed-search-selected :ignore-region)))
     (unless entry
       (error "No entry selected!"))

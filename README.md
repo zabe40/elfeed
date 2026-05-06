@@ -122,6 +122,8 @@ Multiple entries are selected at once by using an active region.
  * <kbd>u</kbd>: mark selected entries as unread
  * <kbd>+</kbd>: add a specific tag to selected entries
  * <kbd>-</kbd>: remove a specific tag from selected entries
+ * <kbd>t</kbd>: set title of selected entry
+ * <kbd>T</kbd>: set title of selected feed
 
 ## Tags
 
