@@ -271,7 +271,7 @@ The FEED-OR-ID may be a feed struct or a feed ID (url)."
   (mkdir elfeed-db-directory t)
   (let* ((coding-system-for-write 'utf-8)
          (dest (expand-file-name "index" elfeed-db-directory))
-         (temp (concat dest "-tmp"))
+         (temp (concat dest ".tmp"))
          (write-region-inhibit-fsync nil))
     ;; We write to a temporary file and rename to avoid corrupting the database
     ;; on crash. `file-precious-flag' is insufficient as it only works for
@@ -600,11 +600,16 @@ If STATS-P is true, return the space cleared in bytes."
 
 (defun elfeed-db-pack ()
   "Pack all content into a single archive for efficient storage."
-  (let ((coding-system-for-write 'utf-8)
-        (next-archive (make-hash-table :test 'equal))
-        (packed ()))
+  (let* ((content-dest (elfeed-ref-archive-filename ".gz"))
+         (content-temp (file-name-with-extension content-dest ".tmp.gz"))
+         (index-dest (elfeed-ref-archive-filename ".index"))
+         (index-temp (file-name-with-extension index-dest ".tmp.index"))
+         (next-archive (make-hash-table :test 'equal))
+         (coding-system-for-write 'utf-8)
+         (write-region-inhibit-fsync nil)
+         (packed ()))
     (make-directory (expand-file-name "data" elfeed-db-directory) t)
-    (with-temp-file (elfeed-ref-archive-filename ".gz")
+    (with-temp-file content-temp
       (with-elfeed-db-visit (entry _)
         (let ((ref (elfeed-entry-content entry))
               (start (1- (point))))
@@ -614,12 +619,16 @@ If STATS-P is true, return the space cleared in bytes."
               (insert content)
               (setf (gethash (elfeed-ref-id ref) next-archive)
                     (cons start (1- (point)))))))))
-    (with-temp-file (elfeed-ref-archive-filename ".index")
+    (with-temp-file index-temp
       (let ((standard-output (current-buffer))
             (print-level nil)
             (print-length nil)
             (print-circle nil))
         (prin1 next-archive)))
+    ;; Rename two files, non-atomically! Instead use separate temporary data
+    ;; directory, see https://github.com/emacs-elfeed/elfeed/pull/569.
+    (rename-file content-temp content-dest t)
+    (rename-file index-temp index-dest t)
     (setf elfeed-ref-cache nil)
     (setf elfeed-ref-archive next-archive)
     (mapc #'elfeed-ref-delete packed)
