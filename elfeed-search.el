@@ -48,6 +48,11 @@ The delay is in seconds."
   :group 'elfeed
   :type 'string)
 
+(defcustom elfeed-search-completion t
+  "Enable tag and search filter completion."
+  :group 'elfeed
+  :type 'boolean)
+
 (define-obsolete-variable-alias 'elfeed-sort-order
   'elfeed-search-sort-order "3.4.2")
 
@@ -703,19 +708,33 @@ Executing a filter in bytecode form is generally faster than
 
 (defun elfeed-search--prompt (current)
   "Prompt for a new filter, starting with CURRENT."
-  (dlet ((crm-separator " ")
-         (crm-prompt "%p")
-         (completion-show-inline-help nil))
-    (string-join
-     (completing-read-multiple
-      "Filter: "
-      (elfeed-search--completion-table)
-      nil nil
-      (if (or (equal "" current) (string-suffix-p " " current))
-          current
-        (concat current " "))
-      'elfeed-search-filter-history)
-     " ")))
+  (unless (or (equal "" current) (string-suffix-p " " current))
+    (setq current (concat current " ")))
+  (if elfeed-search-completion
+      (dlet ((crm-separator " ")
+             (crm-prompt "%p")
+             (completion-show-inline-help nil))
+        (string-join
+         (completing-read-multiple
+          "Filter: "
+          (elfeed-search--completion-table)
+          nil nil current 'elfeed-search-filter-history)
+         " "))
+    (read-from-minibuffer
+     "Filter: " current nil nil 'elfeed-search-filter-history)))
+
+(defun elfeed-search--prompt-tags (prompt &optional tags)
+  "Prompt for tags in the minibuffer.
+PROMPT is the prompt string and TAGS is an optional tags list to
+restrict completion."
+  (setq tags (if elfeed-search-completion
+                 (completing-read-multiple
+                  prompt
+                  (mapcar #'symbol-name (or tags (elfeed-db-get-all-tags)))
+                  nil (consp tags))
+               (split-string (read-from-minibuffer prompt) "[ \t]*,[ \t]*" t)))
+  (unless tags (user-error "No tags given!"))
+  (mapcar #'intern tags))
 
 (defun elfeed-search-clear-filter ()
   "Reset the search filter.
@@ -990,17 +1009,6 @@ the browser defined by `browse-url-secondary-browser-function'."
       (message "Copied: %s" links-str)
       (mapc #'elfeed-search-update-entry entries)
       (elfeed-search--after-action 'yank))))
-
-(defun elfeed-search--prompt-tags (prompt &optional tags)
-  "Prompt for tags in the minibuffer.
-PROMPT is the prompt string and TAGS is an optional tags list to
-restrict completion."
-  (setq tags (completing-read-multiple
-              prompt
-              (mapcar #'symbol-name (or tags (elfeed-db-get-all-tags)))
-              nil (consp tags)))
-  (unless tags (user-error "No tags given!"))
-  (mapcar #'intern tags))
 
 (defun elfeed-search-tag-all (&rest tags)
   "Apply TAGS to all selected entries."
