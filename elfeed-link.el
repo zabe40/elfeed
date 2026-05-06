@@ -111,9 +111,11 @@ Org-mode HTML quote."
 Depending on what FILTER-OR-ID looks like, we jump to either
 search buffer or show a concrete entry."
   (if (string-match "\\([^#]+\\)#\\(.+\\)" filter-or-id)
-      (elfeed-show-entry (elfeed-db-get-entry
-                          (cons (match-string 1 filter-or-id)
-                                (match-string 2 filter-or-id))))
+      (elfeed-show-entry
+       (or (elfeed-db-get-entry
+            (cons (match-string 1 filter-or-id)
+                  (match-string 2 filter-or-id)))
+           (error "Entry not found")))
     (elfeed)
     (elfeed-search-set-filter filter-or-id)))
 
