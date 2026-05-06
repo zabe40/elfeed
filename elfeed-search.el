@@ -162,6 +162,34 @@ When live editing the filter, it is bound to :live.")
   "<" #'elfeed-search-first-entry
   ">" #'elfeed-search-last-entry)
 
+(easy-menu-define elfeed-search-mode-menu elfeed-search-mode-map
+  "Menu for `elfeed-search-mode'."
+  '("Elfeed Search"
+    ["Show entry" elfeed-search-show-entry]
+    ["Browse entry" elfeed-search-browse-url]
+    ["Browse secondary" elfeed-search-browse-url-secondary]
+    ["Copy URL" elfeed-search-yank]
+    "--"
+    ["Add tag" elfeed-search-tag-all]
+    ["Remove tag" elfeed-search-untag-all]
+    ["Mark as unread" elfeed-search-tag-all-unread]
+    ["Mark as read" elfeed-search-untag-all-unread]
+    "--"
+    ["Set feed title" elfeed-search-set-feed-title]
+    ["Set entry title" elfeed-search-set-entry-title]
+    "--"
+    ["Live filter" elfeed-search-live-filter]
+    ["Set filter" elfeed-search-set-filter]
+    ["Clear filter" elfeed-search-clear-filter]
+    "--"
+    ["Fetch" elfeed-search-fetch]
+    ["Fetch visible" elfeed-search-fetch-visible]
+    "--"
+    ["Revert buffer" revert-buffer]
+    ["Quit window" quit-window]
+    "--"
+    ["Customize" (customize-group 'elfeed)]))
+
 (defun elfeed-search--remain-on-entry-p (action)
   "Remain on current entry for ACTION?"
   (and elfeed-search-remain-on-entry

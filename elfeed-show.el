@@ -96,6 +96,31 @@ Called without arguments."
   "A" #'elfeed-show-add-enclosure-to-playlist
   "P" #'elfeed-show-play-enclosure)
 
+(easy-menu-define elfeed-show-mode-menu elfeed-show-mode-map
+  "Menu for `elfeed-show-mode'."
+  '("Elfeed Entry"
+    ["Browse entry" elfeed-show-visit]
+    ["Browse secondary" elfeed-show-visit-secondary]
+    ["Copy URL" elfeed-show-yank]
+    "--"
+    ["Save enclosure" elfeed-show-save-enclosure]
+    ["Play enclosure" elfeed-show-play-enclosure]
+    ["Add enclosure to playlist" elfeed-show-add-enclosure-to-playlist]
+    "--"
+    ["Add tag" elfeed-show-tag]
+    ["Remove tag" elfeed-show-untag]
+    ["Mark as unread" elfeed-show-tag-unread]
+    "--"
+    ["Next entry" elfeed-show-next]
+    ["Previous entry" elfeed-show-prev]
+    "--"
+    ["New live filter" elfeed-show-live-filter]
+    "--"
+    ["Revert buffer" revert-buffer]
+    ["Quit window" quit-window]
+    "--"
+    ["Customize" (customize-group 'elfeed)]))
+
 (define-derived-mode elfeed-show-mode special-mode "elfeed-show"
   "Mode for displaying Elfeed feed entries."
   :syntax-table nil :abbrev-table nil :interactive nil
