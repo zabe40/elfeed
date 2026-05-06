@@ -922,10 +922,15 @@ the browser defined by `browse-url-secondary-browser-function'."
       (mapc #'elfeed-search-update-entry entries)
       (elfeed-search--after-action 'yank))))
 
+(defun elfeed-search--prompt-tag ()
+  "Prompt for tag in the minibuffer."
+  (let ((tag (read-from-minibuffer "Tag: ")))
+    (when (equal tag "") (user-error "No tag given!"))
+    (intern tag)))
+
 (defun elfeed-search-tag-all (tag)
   "Apply TAG to all selected entries."
-  (interactive (list (intern (read-from-minibuffer "Tag: ")))
-               elfeed-search-mode)
+  (interactive (list (elfeed-search--prompt-tag)) elfeed-search-mode)
   (let ((entries (elfeed-search-selected)))
     (elfeed-tag entries tag)
     (mapc #'elfeed-search-update-entry entries)
@@ -933,8 +938,7 @@ the browser defined by `browse-url-secondary-browser-function'."
 
 (defun elfeed-search-untag-all (tag)
   "Remove TAG from all selected entries."
-  (interactive (list (intern (read-from-minibuffer "Tag: ")))
-               elfeed-search-mode)
+  (interactive (list (elfeed-search--prompt-tag)) elfeed-search-mode)
   (let ((entries (elfeed-search-selected)))
     (elfeed-untag entries tag)
     (mapc #'elfeed-search-update-entry entries)
@@ -942,8 +946,7 @@ the browser defined by `browse-url-secondary-browser-function'."
 
 (defun elfeed-search-toggle-all (tag)
   "Toggle TAG on all selected entries."
-  (interactive (list (intern (read-from-minibuffer "Tag: ")))
-               elfeed-search-mode)
+  (interactive (list (elfeed-search--prompt-tag)) elfeed-search-mode)
   (let ((entries (elfeed-search-selected)) entries-tag entries-untag)
     (cl-loop for entry in entries
              when (elfeed-tagged-p tag entry)

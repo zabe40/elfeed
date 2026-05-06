@@ -307,7 +307,7 @@ the browser defined by `browse-url-secondary-browser-function'."
 
 (defun elfeed-show-tag (&rest tags)
   "Add TAGS to the displayed entry."
-  (interactive (list (intern (read-from-minibuffer "Tag: "))) elfeed-show-mode)
+  (interactive (list (elfeed-search--prompt-tag)) elfeed-show-mode)
   (let ((entry elfeed-show-entry))
     (apply #'elfeed-tag entry tags)
     (with-current-buffer (elfeed-search-buffer)
