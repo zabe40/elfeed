@@ -171,7 +171,7 @@ Return non-nil if an actual update occurred, not counting content."
   "Return the normalized tag list for TAGS.
 Additional tag lists can be given as MORE-TAGS."
   (let ((all (apply #'append tags (nconc more-tags (list ())))))
-    (cl-delete-duplicates (cl-sort all #'string< :key #'symbol-name))))
+    (delete-consecutive-dups (sort all #'string<))))
 
 (defun elfeed-tag-1 (entry &rest tags)
   "Add TAGS to ENTRY."
@@ -256,7 +256,7 @@ The FEED-OR-ID may be a feed struct or a feed ID (url)."
         (setf (gethash tag table) tag)))
     (let ((tags ()))
       (maphash (lambda (k _) (push k tags)) table)
-      (cl-sort tags #'string< :key #'symbol-name))))
+      (sort tags #'string<))))
 
 ;; Saving and Loading:
 

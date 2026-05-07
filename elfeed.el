@@ -678,7 +678,7 @@ saved to your customization file."
   (let* ((xml (elfeed-xml-parse-file file))
          (feeds (elfeed--parse-opml xml))
          (full (append feeds elfeed-feeds)))
-    (prog1 (setf elfeed-feeds (cl-delete-duplicates full :test #'string=))
+    (prog1 (setf elfeed-feeds (delete-dups (copy-sequence full)))
       (when (called-interactively-p 'any)
         (customize-save-variable 'elfeed-feeds elfeed-feeds)
         (elfeed-log 'notice "%d feeds loaded from %s" (length feeds) file)))))
