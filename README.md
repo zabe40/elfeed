@@ -160,7 +160,7 @@ age is a relative time expression or an absolute date expression.
 Entries older than this age are filtered out. The age description
 accepts plain English, but cannot have spaces, so use dashes. For
 example, `"@2-years-old"`, `"@3-days-ago"` or `"@2019-06-24"`. A date
-range are two ages seperated by a `--`, e.g.
+range are two ages separated by a `--`, e.g.
 `"@2019-06-20--2019-06-24"` or `"@5-days-ago--1-day-ago"`. The entry
 must be newer than the first expression but older than the second. The
 database is date-oriented, so **filters that include an age
@@ -289,12 +289,12 @@ filter. Emacs automatically persists bookmarks across sessions.
 ## Org-store-link and Org-capture
 
 When `org-store-link` is called from an Elfeed search or an Elfeed
-entry, a link to the serach or entry is stored in Org-mode format.
+entry, a link to the search or entry is stored in Org-mode format.
 
 This link can be inserted into an Org-mode document. If the link is
-openned, the search or entry will be shown in Elfeed.
+opened, the search or entry will be shown in Elfeed.
 
-In addition to the link, `org-store-link` also store some additonnal
+In addition to the link, `org-store-link` also store some additional
 properties. You can access them in an Org-capture template with the
 template expansion `%:keyword`. (`org-store-link` is automatically
 called when you do a capture.)
