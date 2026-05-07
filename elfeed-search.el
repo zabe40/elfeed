@@ -742,9 +742,10 @@ tags from."
   (let* ((all-tags
           (or (if entries
                   (delete-dups
-                   (apply #'append
-                          (mapcar #'elfeed-entry-tags
-                                  (ensure-list entries))))
+                   (copy-sequence
+                    (apply #'append
+                           (mapcar #'elfeed-entry-tags
+                                   (ensure-list entries)))))
                 (elfeed-db-get-all-tags))
               (user-error "No tags found")))
          (all-tags (mapcar #'symbol-name all-tags))
