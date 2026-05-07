@@ -464,6 +464,15 @@ Return DEFAULT if unavailable."
 (gv-define-setter elfeed-meta (value thing key &optional _default)
   `(elfeed-meta--put ,thing ,key ,value))
 
+(defun elfeed-meta--title (thing)
+  "Return TITLE of THING."
+  (cl-typecase thing
+    (elfeed-feed  (or (plist-get (elfeed-feed-meta thing) :title)
+                      (elfeed-feed-title thing)))
+    (elfeed-entry (or (plist-get (elfeed-entry-meta thing) :title)
+                      (elfeed-entry-title thing)))
+    (otherwise (error "Don't know how to access title on %S" thing))))
+
 ;; Filesystem storage:
 
 (defvar elfeed-ref-archive nil

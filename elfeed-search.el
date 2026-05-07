@@ -417,12 +417,10 @@ The customization `elfeed-search-date-format' sets the formatting."
 (defun elfeed-search-print-entry--default (entry)
   "Print ENTRY to the buffer."
   (let* ((date (elfeed-search-format-date (elfeed-entry-date entry)))
-         (title (or (elfeed-meta entry :title) (elfeed-entry-title entry) ""))
+         (title (or (elfeed-meta--title entry) ""))
          (title-faces (elfeed-search--faces (elfeed-entry-tags entry)))
          (feed (elfeed-entry-feed entry))
-         (feed-title
-          (when feed
-            (or (elfeed-meta feed :title) (elfeed-feed-title feed))))
+         (feed-title (and feed (elfeed-meta--title feed)))
          (tags (mapcar #'symbol-name (elfeed-entry-tags entry)))
          (tags-str (mapconcat
                     (lambda (s) (propertize s 'face 'elfeed-search-tag-face))
@@ -578,10 +576,9 @@ This function must *only* be called within the body of
     (let* ((tags (elfeed-entry-tags entry))
            (date (elfeed-entry-date entry))
            (age (- (float-time) date))
-           (title (or (elfeed-meta entry :title) (elfeed-entry-title entry)))
+           (title (elfeed-meta--title entry))
            (link (elfeed-entry-link entry))
-           (feed-title
-            (or (elfeed-meta feed :title) (elfeed-feed-title feed) ""))
+           (feed-title (or (elfeed-meta--title feed) ""))
            (feed-id (elfeed-feed-id feed)))
       (when (or (and after (> age after))
                 (and limit (<= limit 0))
@@ -635,13 +632,11 @@ Executing a filter in bytecode form is generally faster than
               ,@(when (or must-have must-not-have)
                   '((tags (elfeed-entry-tags entry))))
               ,@(when (or matches not-matches)
-                  '((title (or (elfeed-meta entry :title)
-                               (elfeed-entry-title entry)))
+                  '((title (elfeed-meta--title entry))
                     (link (elfeed-entry-link entry))))
               ,@(when (or feeds not-feeds)
                   '((feed-id (elfeed-feed-id feed))
-                    (feed-title (or (elfeed-meta feed :title)
-                                    (elfeed-feed-title feed) "")))))
+                    (feed-title (or (elfeed-meta--title feed) "")))))
          ,@(when after
              `((when (> age ,after)
                  (elfeed-db-return))))
@@ -1093,8 +1088,7 @@ Sets the :title key of the entry's metadata.  See `elfeed-meta'."
                    (user-error "No entry selected!"))))
     (unless title
       (setq title (read-from-minibuffer "Entry title: "
-                                        (or (elfeed-meta entry :title)
-                                            (elfeed-entry-title entry)))))
+                                        (elfeed-meta--title entry))))
     (setf (elfeed-meta entry :title) title)
     (elfeed-search-update-entry entry)))
 
@@ -1107,8 +1101,7 @@ Sets the :title key of the feed's metadata.  See `elfeed-meta'."
                    (user-error "No entry selected!")))))
     (unless title
       (setq title (read-from-minibuffer "Feed title: "
-                                        (or (elfeed-meta feed :title)
-                                            (elfeed-feed-title feed)))))
+                                        (elfeed-meta--title feed))))
     (setf (elfeed-meta feed :title) title)
     (elfeed-search-update :force)))
 
