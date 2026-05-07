@@ -893,6 +893,7 @@ When FORCE is non-nil, redraw even when the database hasn't changed.
 Otherwise debounce by `elfeed-search-update-delay' and only redraw when
 there are changes.  When called interactively FORCE is t, and the
 command behaves just like `revert-buffer'."
+  (declare (completion ignore)) ;; Press "g" or M-x revert-buffer
   (interactive (list t) elfeed-search-mode)
   (when elfeed-search--update-timer
     (cancel-timer elfeed-search--update-timer)
@@ -1112,6 +1113,7 @@ the browser defined by `browse-url-secondary-browser-function'."
 
 (defun elfeed-search-header-click (event)
   "Handle click EVENT on the header line of the search buffer."
+  (declare (completion ignore))
   (interactive "@e")
   (when-let* ((pos (event-end event))
               (str (posn-string pos)))
@@ -1124,6 +1126,7 @@ the browser defined by `browse-url-secondary-browser-function'."
 
 (defun elfeed-search-click (event)
   "Handle click EVENT in search buffer."
+  (declare (completion ignore))
   (interactive "@e")
   (when-let* ((pos (event-end event))
               (pos (posn-point pos)))
