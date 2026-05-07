@@ -159,12 +159,14 @@ A component beginning with a `@` indicates an age or a date range. An
 age is a relative time expression or an absolute date expression.
 Entries older than this age are filtered out. The age description
 accepts plain English, but cannot have spaces, so use dashes. For
-example, `"@2-years-old"`, `"@3-days-ago"` or `"@2019-06-24"`. A date
-range are two ages separated by a `--`, e.g.
-`"@2019-06-20--2019-06-24"` or `"@5-days-ago--1-day-ago"`. The entry
-must be newer than the first expression but older than the second. The
-database is date-oriented, so **filters that include an age
-restriction are significantly more efficient.**
+example, `"@2-years-old"`, `"@3-days-ago"` or `"@2019-06-24"`. The
+dashes and suffixes like `-old` are ignored, such that you can use a
+shorter form , e.g., `"@2years"`. A date range are two ages separated
+by a `--`, e.g. `"@2019-06-20--2019-06-24"` or
+`"@5-days-ago--1-day-ago"`. The entry must be newer than the first
+expression but older than the second. The database is date-oriented,
+so **filters that include an age restriction are significantly more
+efficient.**
 
 A component beginning with a `!` is treated as an "inverse" regular
 expression. This means that any entry matching this regular expression
@@ -188,7 +190,7 @@ entries matching it (title or URL) will be shown.
 
 Here are some example filters.
 
- * `@6-months-ago +unread`
+ * `@6months +unread`
 
 Only show unread entries of the last six months. This is the default filter.
 
@@ -217,7 +219,7 @@ of `elfeed-search-filter`. It only changes buffer-locally when you're
 adjusting the filter within Elfeed. For example, some users prefer to
 have a space on the end for easier quick searching.
 
-    (setq-default elfeed-search-filter "@1-week-ago +unread ")
+    (setq-default elfeed-search-filter "@1week +unread ")
 
 ### Tag Hooks
 

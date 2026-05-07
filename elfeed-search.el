@@ -43,7 +43,7 @@ The delay is in seconds."
   :group 'elfeed
   :type 'number)
 
-(defcustom elfeed-search-filter "@6-months-ago +unread"
+(defcustom elfeed-search-filter "@6months +unread"
   "Query string filtering shown entries."
   :group 'elfeed
   :type 'string)
@@ -518,7 +518,7 @@ The customization `elfeed-search-date-format' sets the formatting."
 
 (defun elfeed-search--recover-time (seconds)
   "Pick a reasonable filter representation for SECONDS."
-  (let ((units '((60   1 "minute")
+  (let ((units '((60   1 "min")
                  (60   1 "hour")
                  (24   1 "day")
                  (7    1 "week")
@@ -533,7 +533,7 @@ The customization `elfeed-search-date-format' sets the formatting."
              do (setf name unit
                       value next-value))
     (let ((count (format "%.4g" value)))
-      (format "%s-%s%s-ago" count name (if (equal count "1") "" "s")))))
+      (concat count name (if (equal count "1") "" "s")))))
 
 (defun elfeed-search--recover-units (after-seconds &optional before-seconds)
   "Stringify the age or optionally a date range.
@@ -702,11 +702,11 @@ Executing a filter in bytecode form is generally faster than
                "")))
         (append
          ;; Dynamically computed @age candidates.
-         (when (string-match-p "\\`@[0-9]+" input)
-           (let* ((n (string-to-number (substring input 1)))
-                  (p (if (= n 1) "" "s")))
-             (mapcar (lambda (x) (format "@%d-%s%s-ago" n x p))
-                     '(hour day week month year))))
+         (when (string-match "\\`@[0-9]+" input)
+           (let* ((n (substring input 1 (match-end 0)))
+                  (p (if (equal n "1") "" "s")))
+             (mapcar (lambda (x) (concat "@" n x p))
+                     '("hour" "day" "week" "month" "year"))))
          ;; Cached, but static candidates, not depending on prefix.
          (unless (equal input "")
            (with-memoization cache
@@ -795,6 +795,8 @@ Any component beginning with an @ is an age limit or an age
 range.  If a limit, no posts older than this are allowed.  If a
 range, posts dates have to be inbetween the specified date
 range.  Examples:
+- \"@3days\"
+- \"@1year\"
 - \"@3-days-ago\"
 - \"@1-year-old\"
 - \"@2019-06-24\"
