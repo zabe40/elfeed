@@ -1143,7 +1143,9 @@ the browser defined by `browse-url-secondary-browser-function'."
        ((setq obj (and (get-text-property pos 'elfeed-feed-title)
                        (get-text-property pos 'elfeed-entry)))
         (elfeed-search--add-filter
-         (concat "=" (elfeed-feed-id (elfeed-entry-feed obj)))))
+         (concat "=" (string-replace
+                      "\\." "."
+                      (regexp-quote (elfeed-feed-id (elfeed-entry-feed obj)))))))
        ((setq obj (and (get-text-property pos 'elfeed-entry-title)
                        (get-text-property pos 'elfeed-entry)))
         (elfeed-search-show-entry obj))))))
