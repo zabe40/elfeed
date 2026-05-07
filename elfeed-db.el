@@ -187,17 +187,13 @@ Additional tag lists can be given as MORE-TAGS."
 
 (defun elfeed-tag (entry-or-entry-list &rest tags)
   "Add TAGS to ENTRY-OR-ENTRY-LIST and run `elfeed-tag-hooks'."
-  (let* ((entries (if (elfeed-entry-p entry-or-entry-list)
-                      (list entry-or-entry-list)
-                    entry-or-entry-list)))
+  (let ((entries (ensure-list entry-or-entry-list)))
     (run-hook-with-args 'elfeed-tag-hooks entries tags)
     (cl-loop for entry in entries do (apply #'elfeed-tag-1 entry tags))))
 
 (defun elfeed-untag (entry-or-entry-list &rest tags)
   "Remove TAGS from ENTRY-OR-ENTRY-LIST and run `elfeed-untag-hooks'."
-  (let* ((entries (if (elfeed-entry-p entry-or-entry-list)
-                      (list entry-or-entry-list)
-                    entry-or-entry-list)))
+  (let ((entries (ensure-list entry-or-entry-list)))
     (run-hook-with-args 'elfeed-untag-hooks entries tags)
     (cl-loop for entry in entries do (apply #'elfeed-untag-1 entry tags))))
 
