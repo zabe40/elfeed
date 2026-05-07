@@ -115,9 +115,6 @@ When live editing the filter, it is bound to :live.")
 (defvar elfeed-search-filter-overflowing nil
   "When non-nil, the current live filter overflows the window.")
 
-(defvar elfeed-search--offset 1
-  "Offset between line numbers and entry list position.")
-
 (defvar elfeed-search-header-function #'elfeed-search--header
   "Function that returns the string to be used for the Elfeed search header.")
 
@@ -857,7 +854,7 @@ expression, matching against entry link, title, and feed title."
 
 (defun elfeed--save-position ()
   "Save entry, line and column."
-  (list (elfeed-search-selected :single)
+  (list (elfeed-search-selected :ignore-region)
         (line-number-at-pos)
         (current-column)))
 
@@ -1000,23 +997,25 @@ Given a prefix, this function becomes `elfeed-search-fetch-visible'."
 (defun elfeed-search-update-entry (entry)
   "Redraw ENTRY in the elfeed-search buffer."
   (when-let* ((n (cl-position entry elfeed-search-entries)))
-    (elfeed-search-update-line (+ elfeed-search--offset n))))
+    (elfeed-search-update-line (1+ n))))
 
-(defun elfeed-search-selected (&optional ignore-region-p)
+(defun elfeed-search-selected (&optional ignore-region)
   "Return a list of the currently selected feeds.
 
-If IGNORE-REGION-P is non-nil, only return the entry under point."
-  (let ((use-region (and (not ignore-region-p) (use-region-p))))
-    (let ((start (if use-region (region-beginning) (point)))
-          (end   (if use-region (region-end)       (point))))
-      (cl-loop for line from (line-number-at-pos start)
-               to (line-number-at-pos end)
-               for offset = (- line elfeed-search--offset)
-               when (and (>= offset 0) (nth offset elfeed-search-entries))
-               collect it into selected
-               finally (return (if ignore-region-p
-                                   (car selected)
-                                 selected))))))
+If IGNORE-REGION is non-nil, only return the entry under point."
+  (if (and (not ignore-region) (use-region-p))
+      (let ((start (region-beginning))
+            (end   (region-end)))
+        (save-excursion
+          (goto-char start)
+          (goto-char (pos-bol))
+          (cl-loop while (< (point) end)
+                   when (prog1 (get-text-property (point) 'elfeed-entry)
+                          (forward-line 1))
+                   collect it into selected
+                   finally return selected)))
+    (when-let* ((entry (get-text-property (pos-bol) 'elfeed-entry)))
+      (if ignore-region entry (list entry)))))
 
 (defun elfeed-search-browse-url (&optional secondary)
   "Visit the current entry in your browser using `browse-url'.
