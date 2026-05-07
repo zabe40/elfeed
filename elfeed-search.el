@@ -891,8 +891,9 @@ But keep entry, line and column instead of only point."
   "Update the elfeed-search buffer listing to match the database.
 When FORCE is non-nil, redraw even when the database hasn't changed.
 Otherwise debounce by `elfeed-search-update-delay' and only redraw when
-there are changes."
-  (interactive nil elfeed-search-mode)
+there are changes.  When called interactively FORCE is t, and the
+command behaves just like `revert-buffer'."
+  (interactive (list t) elfeed-search-mode)
   (when elfeed-search--update-timer
     (cancel-timer elfeed-search--update-timer)
     (setq elfeed-search--update-timer nil))
@@ -944,13 +945,6 @@ directly.  Instead use `elfeed-search-update'."
 The function is used as hook.  Instead of this function, you usually
 want to use `elfeed-search-update'."
   (elfeed-search-update :force))
-
-;; Keep old name to avoid breakage.
-(defun elfeed-search-update--force (&rest _)
-  "Obsolete command, which calls `elfeed-search-update' with argument :force."
-  (interactive)
-  (elfeed-search-update :force))
-(make-obsolete 'elfeed-search-update--force #'revert-buffer "3.4.2")
 
 (defun elfeed-search--update-debounce (&rest _)
   "Call `elfeed-search-update' with debouncing.
@@ -1252,7 +1246,11 @@ state of the db for when `desktop-auto-save-timeout' is enabled."
 (add-to-list 'desktop-buffer-mode-handlers
              '(elfeed-search-mode . elfeed-search-desktop-restore))
 
-(define-obsolete-function-alias 'elfeed-search-quit-window 'quit-window "3.4.2")
+;; Keep old names to avoid breakage.
+(define-obsolete-function-alias 'elfeed-search-quit-window
+  'quit-window "3.4.2")
+(define-obsolete-function-alias 'elfeed-search-update--force
+  'elfeed-search-update-delay "3.4.2")
 
 (provide 'elfeed-search)
 ;;; elfeed-search.el ends here

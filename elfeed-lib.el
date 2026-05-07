@@ -17,15 +17,6 @@
 (require 'xml)
 (require 'browse-url)
 
-(define-obsolete-function-alias 'elfeed-directory-empty-p
-  #'directory-empty-p "3.4.2")
-
-(define-obsolete-function-alias 'elfeed-libxml-supported-p
-  #'libxml-available-p "3.4.2")
-
-(define-obsolete-function-alias 'elfeed-get-url-at-point
-  #'thing-at-point-url-at-point "3.4.2")
-
 (defun elfeed-strip-properties (string)
   "Return a copy of STRING with all properties removed.
 If STRING is nil, returns nil."
@@ -397,6 +388,14 @@ If SECONDARY is non-nil, use the `browse-url-secondary-browser-function'."
              browse-url-secondary-browser-function
            browse-url-browser-function)))
     (browse-url url)))
+
+;; Keep old names to avoid breakage.
+(define-obsolete-function-alias 'elfeed-directory-empty-p
+  #'directory-empty-p "3.4.2")
+(define-obsolete-function-alias 'elfeed-libxml-supported-p
+  #'libxml-available-p "3.4.2")
+(define-obsolete-function-alias 'elfeed-get-url-at-point
+  #'thing-at-point-url-at-point "3.4.2")
 
 (provide 'elfeed-lib)
 ;;; elfeed-lib.el ends here
