@@ -306,6 +306,7 @@ Movement is configured by `elfeed-search-remain-on-entry'."
   (add-hook 'elfeed-update-hooks #'elfeed-search--update-debounce)
   (add-hook 'elfeed-update-init-hooks #'elfeed-search--update-force)
   (add-hook 'kill-buffer-hook #'elfeed-db-save t 'local)
+  (add-hook 'kill-buffer-hook #'elfeed-search--kill-buffer t 'local)
   (add-hook 'window-size-change-functions #'elfeed-search--resize nil 'local)
   (add-hook 'elfeed-db-unload-hook #'elfeed-search--unload)
   (add-hook 'quit-window-hook 'elfeed-db-save nil 'local)
@@ -315,14 +316,17 @@ Movement is configured by `elfeed-search-remain-on-entry'."
   "Create and return search buffer."
   (get-buffer-create "*elfeed-search*"))
 
-(defun elfeed-search--unload ()
-  "Hook function for `elfeed-db-unload-hook'."
+(defun elfeed-search--kill-buffer ()
+  "Cancel timers when killing the buffer."
   (when elfeed-search--update-timer
     (cancel-timer elfeed-search--update-timer)
     (setf elfeed-search--update-timer nil))
   (when elfeed-search--resize-timer
     (cancel-timer elfeed-search--resize-timer)
-    (setf elfeed-search--resize-timer nil))
+    (setf elfeed-search--resize-timer nil)))
+
+(defun elfeed-search--unload ()
+  "Hook function for `elfeed-db-unload-hook'."
   (with-current-buffer (elfeed-search-buffer)
     ;; don't try to save the database in this case
     (remove-hook 'kill-buffer-hook #'elfeed-db-save t)
