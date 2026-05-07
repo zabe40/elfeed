@@ -271,6 +271,11 @@ back to `current-kill'."
                        (ignore-errors (current-kill 0 :non-destructively))))))
     (substring-no-properties str)))
 
+(defsubst elfeed-add-properties (str &rest props)
+  "Add properties PROPS to STR destructively and return STR."
+  (add-text-properties 0 (length str) props str)
+  str)
+
 (defun elfeed-get-link-at-point ()
   "Try to a link at point and return its URL."
   (or (get-text-property (point) 'shr-url)

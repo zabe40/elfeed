@@ -150,6 +150,8 @@ When live editing the filter, it is bound to :live.")
   :parent special-mode-map
   "G" #'elfeed-search-fetch
   "RET" #'elfeed-search-show-entry
+  "<mouse-1>" #'elfeed-search-click
+  "<header-line> <mouse-1>" #'elfeed-search-header-click
   "s" #'elfeed-search-live-filter
   "S" #'elfeed-search-set-filter
   "c" #'elfeed-search-clear-filter
@@ -220,26 +222,23 @@ Movement is configured by `elfeed-search-remain-on-entry'."
              (not (elfeed-search--remain-on-entry-p action)))
     (forward-line)))
 
+(defun elfeed-search--header-button (command &optional text)
+  "Create header line button for COMMAND with optional TEXT."
+  (propertize (or text (symbol-name command))
+              'elfeed-header-button command
+              'mouse-face 'highlight))
+
 (defun elfeed-search--intro-header ()
   "Return the header shown to new users."
-  (with-temp-buffer
-    (cl-flet ((button (f)
-                (insert-button (symbol-name f)
-                               'follow-link t
-                               'action (lambda (_) (call-interactively f)))))
-      (insert "Database empty. Use ")
-      (button 'elfeed-add-feed)
-      (insert ", or ")
-      (button 'elfeed-load-opml)
-      (insert ", or ")
-      (button 'elfeed-update)
-      (insert ".")
-      (buffer-string))))
+  (concat "Database empty. Use "
+          (elfeed-search--header-button #'elfeed-add-feed) ", or "
+          (elfeed-search--header-button #'elfeed-load-opml) ", or "
+          (elfeed-search--header-button #'elfeed-update) "."))
 
 (defun elfeed-search--count-unread ()
   "Count the number of entries and feeds being currently displayed."
   (if (and elfeed-search-filter-active elfeed-search-filter-overflowing)
-      "?/?:?"
+      (substring "?/?:?")
     (cl-loop with feeds = (make-hash-table :test 'equal)
              for entry in elfeed-search-entries
              for feed = (elfeed-entry-feed entry)
@@ -263,18 +262,27 @@ Movement is configured by `elfeed-search-remain-on-entry'."
           (in-process (elfeed-queue-count-active)))
       (format "%d jobs pending, %d active..."
               (- total in-process) in-process)))
-   ((let* ((db-time (seconds-to-time (elfeed-db-last-update)))
-           (update (format-time-string "%Y-%m-%d %H:%M" db-time))
-           (unread (elfeed-search--count-unread)))
-      (format "Updated %s, %s%s"
-              (propertize update 'face 'elfeed-search-last-update-face)
-              (propertize unread 'face 'elfeed-search-unread-count-face)
-              (cond
-               (elfeed-search-filter-active "")
-               ((string-match-p "[^ ]" elfeed-search-filter)
-                (concat ", " (propertize elfeed-search-filter
-                                         'face 'elfeed-search-filter-face)))
-               ("")))))))
+   ((let* ((update (elfeed-add-properties
+                    (format-time-string
+                     "%Y-%m-%d %H:%M"
+                     (seconds-to-time (elfeed-db-last-update)))
+                    'face 'elfeed-search-last-update-face))
+           (unread (elfeed-add-properties
+                    (elfeed-search--count-unread)
+                    'face 'elfeed-search-unread-count-face))
+           (filter (cond
+                    (elfeed-search-filter-active "")
+                    ((string-match-p "[^ ]" elfeed-search-filter)
+                     (mapconcat
+                      (lambda (x)
+                        (elfeed-add-properties
+                         x 'mouse-face 'highlight 'elfeed-header-filter x))
+                      (split-string elfeed-search-filter) " "))
+                    (""))))
+      (concat
+       (elfeed-search--header-button #'elfeed-search-fetch
+                                     (concat "Updated " update))
+       ", " unread (and (not (equal filter "")) ", ") filter)))))
 
 (define-derived-mode elfeed-search-mode special-mode "elfeed-search"
   "Major mode for listing elfeed feed entries."
@@ -416,14 +424,17 @@ The customization `elfeed-search-date-format' sets the formatting."
 
 (defun elfeed-search-print-entry--default (entry)
   "Print ENTRY to the buffer."
-  (let* ((date (elfeed-search-format-date (elfeed-entry-date entry)))
+  (let* ((date-float (elfeed-entry-date entry))
+         (date-str (elfeed-search-format-date date-float))
          (title (or (elfeed-meta--title entry) ""))
          (title-faces (elfeed-search--faces (elfeed-entry-tags entry)))
          (feed (elfeed-entry-feed entry))
          (feed-title (and feed (elfeed-meta--title feed)))
          (tags (mapcar #'symbol-name (elfeed-entry-tags entry)))
          (tags-str (mapconcat
-                    (lambda (s) (propertize s 'face 'elfeed-search-tag-face))
+                    (lambda (s)
+                      (propertize s 'face 'elfeed-search-tag-face
+                                  'mouse-face 'highlight 'elfeed-tag s))
                     tags ","))
          (window (get-buffer-window))
          (title-width (- (if window (window-width window) (frame-width))
@@ -434,10 +445,16 @@ The customization `elfeed-search-date-format' sets the formatting."
                                title-width
                                elfeed-search-title-max-width)
                         :left)))
-    (insert (propertize date 'face 'elfeed-search-date-face) " "
-            (propertize title-column 'face title-faces 'kbd-help title))
+    (insert (elfeed-add-properties date-str
+                                   'face 'elfeed-search-date-face
+                                   'mouse-face 'highlight 'elfeed-date date-float)
+            " "
+            (elfeed-add-properties title-column
+                                   'face title-faces 'kbd-help title
+                                   'mouse-face 'highlight 'elfeed-entry-title t))
     (when feed-title
-      (insert " " (propertize feed-title 'face 'elfeed-search-feed-face)))
+      (insert " " (propertize feed-title 'face 'elfeed-search-feed-face
+                              'mouse-face 'highlight 'elfeed-feed-title t)))
     (when tags
       (insert " (" tags-str ")"))))
 
@@ -886,6 +903,12 @@ there are changes."
           (run-at-time elfeed-search-update-delay nil
                        #'elfeed-search--update-immediately))))
 
+(defun elfeed-search--print-entry (entry)
+  "Print ENTRY line and attach `elfeed-entry' text property."
+  (let ((beg (point)))
+    (funcall elfeed-search-print-entry-function entry)
+    (put-text-property beg (point) 'elfeed-entry entry)))
+
 (defun elfeed-search--update-immediately (&optional method)
   "Immediately update the elfeed-search buffer.
 METHOD can be nil, :force to force a full entry update and redraw or
@@ -907,7 +930,7 @@ directly.  Instead use `elfeed-search-update'."
             (unless (eq method :preserve)
               (elfeed-search--update-list))
             (dolist (entry elfeed-search-entries)
-              (funcall elfeed-search-print-entry-function entry)
+              (elfeed-search--print-entry entry)
               (insert "\n"))
             (setf elfeed-search-last-update (float-time))))
         (setq list-buffers-directory elfeed-search-filter)
@@ -972,7 +995,7 @@ Given a prefix, this function becomes `elfeed-search-fetch-visible'."
       (when n (elfeed-goto-line n))
       (when-let* ((entry (elfeed-search-selected :ignore-region)))
         (elfeed-kill-line)
-        (funcall elfeed-search-print-entry-function entry)))))
+        (elfeed-search--print-entry entry)))))
 
 (defun elfeed-search-update-entry (entry)
   "Redraw ENTRY in the elfeed-search buffer."
@@ -1079,6 +1102,49 @@ the browser defined by `browse-url-secondary-browser-function'."
     ;; elfeed-show.el is required by elfeed.el at runtime.
     (declare-function elfeed-show-entry "elfeed-show")
     (elfeed-show-entry entry)))
+
+(defun elfeed-search--add-filter (str)
+  "Add STR to `elfeed-search-filter'."
+  (let ((filter (split-string elfeed-search-filter)))
+    (unless (member str filter)
+      (elfeed-search-set-filter (string-join (append filter (list str)) " ")))))
+
+(defun elfeed-search--remove-filter (str)
+  "Remove STR from `elfeed-search-filter'."
+  (let ((filter (split-string elfeed-search-filter)))
+    (when (member str filter)
+      (elfeed-search-set-filter (string-join (delete str filter) " ")))))
+
+(defun elfeed-search-header-click (event)
+  "Handle click EVENT on the header line of the search buffer."
+  (interactive "@e")
+  (when-let* ((pos (event-end event))
+              (str (posn-string pos)))
+    (let (obj)
+      (cond
+       ((setq obj (get-text-property (cdr str) 'elfeed-header-filter (car str)))
+        (elfeed-search--remove-filter obj))
+       ((setq obj (get-text-property (cdr str) 'elfeed-header-button (car str)))
+        (call-interactively obj))))))
+
+(defun elfeed-search-click (event)
+  "Handle click EVENT in search buffer."
+  (interactive "@e")
+  (when-let* ((pos (event-end event))
+              (pos (posn-point pos)))
+    (let (obj)
+      (cond
+       ((setq obj (get-text-property pos 'elfeed-date))
+        (elfeed-search--add-filter (concat "@" (elfeed-search-format-date obj))))
+       ((setq obj (get-text-property pos 'elfeed-tag))
+        (elfeed-search--add-filter (concat "+" obj)))
+       ((setq obj (and (get-text-property pos 'elfeed-feed-title)
+                       (get-text-property pos 'elfeed-entry)))
+        (elfeed-search--add-filter
+         (concat "=" (elfeed-feed-id (elfeed-entry-feed obj)))))
+       ((setq obj (and (get-text-property pos 'elfeed-entry-title)
+                       (get-text-property pos 'elfeed-entry)))
+        (elfeed-search-show-entry obj))))))
 
 (defun elfeed-search-set-entry-title (&optional title)
   "Manually set TITLE for the entry under point.
