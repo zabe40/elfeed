@@ -723,6 +723,7 @@ saved to your customization file."
   ;; run-time only, so don't load when compiling other files
   (require 'elfeed-csv)
   (require 'elfeed-show)
-  (require 'elfeed-search))
+  (require 'elfeed-search)
+  (require 'elfeed-tree))
 
 ;;; elfeed.el ends here
