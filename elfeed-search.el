@@ -459,7 +459,7 @@ The customization `elfeed-search-date-format' sets the formatting."
                                    'mouse-face 'highlight 'elfeed-entry-title t))
     (when feed-title
       (insert " " (propertize feed-title 'face 'elfeed-search-feed-face
-                              'mouse-face 'highlight 'elfeed-feed-title t)))
+                              'mouse-face 'highlight 'elfeed-feed feed)))
     (when tags
       (insert " (" (elfeed-search--format-tags tags) ")"))))
 
@@ -1134,13 +1134,14 @@ the browser defined by `browse-url-secondary-browser-function'."
        ((setq obj (get-text-property pos 'elfeed-date))
         (elfeed-search--add-filter (concat "@" (elfeed-search-format-date obj))))
        ((setq obj (get-text-property pos 'elfeed-tag))
-        (elfeed-search--add-filter (concat "+" obj)))
-       ((setq obj (and (get-text-property pos 'elfeed-feed-title)
-                       (get-text-property pos 'elfeed-entry)))
+        (elfeed-search--add-filter
+         (mapconcat (lambda (x) (format "+%s" x))
+                    (ensure-list obj) " ")))
+       ((setq obj (get-text-property pos 'elfeed-feed))
         (elfeed-search--add-filter
          (concat "=" (string-replace
                       "\\." "."
-                      (regexp-quote (elfeed-feed-id (elfeed-entry-feed obj)))))))
+                      (regexp-quote (elfeed-feed-id obj))))))
        ((setq obj (and (get-text-property pos 'elfeed-entry-title)
                        (get-text-property pos 'elfeed-entry)))
         (elfeed-search-show-entry obj))))))
