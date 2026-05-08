@@ -387,7 +387,7 @@ The customization `elfeed-search-date-format' sets the formatting."
 (defface elfeed-search-unread-count-face
   '((((class color) (background light)) (:foreground "#000"))
     (((class color) (background dark))  (:foreground "#fff")))
-  "Face used in search mode for unread entry titles."
+  "Face used in search mode for the unread counter in the header."
   :group 'elfeed)
 
 (defface elfeed-search-filter-face
