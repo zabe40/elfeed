@@ -505,24 +505,15 @@ The customization `elfeed-search-date-format' sets the formatting."
                           (push re not-feeds))))
                   (otherwise (when (elfeed-valid-regexp-p element)
                                (push element matches)))))
-    `(,@(when before
-          (list :before before))
-      ,@(when after
-          (list :after after))
-      ,@(when must-have
-          (list :must-have must-have))
-      ,@(when must-not-have
-          (list :must-not-have must-not-have))
-      ,@(when matches
-          (list :matches matches))
-      ,@(when not-matches
-          (list :not-matches not-matches))
-      ,@(when limit
-          (list :limit limit))
-      ,@(when feeds
-          (list :feeds feeds))
-      ,@(when not-feeds
-          (list :not-feeds not-feeds)))))
+    `(,@(and before (list :before before))
+      ,@(and after (list :after after))
+      ,@(and must-have (list :must-have must-have))
+      ,@(and must-not-have (list :must-not-have must-not-have))
+      ,@(and matches (list :matches matches))
+      ,@(and not-matches (list :not-matches not-matches))
+      ,@(and limit (list :limit limit))
+      ,@(and feeds (list :feeds feeds))
+      ,@(and not-feeds (list :not-feeds not-feeds)))))
 
 (defun elfeed-search--recover-time (seconds)
   "Pick a reasonable filter representation for SECONDS."
