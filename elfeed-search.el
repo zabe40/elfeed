@@ -337,7 +337,7 @@ Movement is configured by `elfeed-search-remain-on-entry'."
 The customization `elfeed-search-date-format' sets the formatting."
   (cl-destructuring-bind (format target alignment) elfeed-search-date-format
     (let* ((string (format-time-string format (seconds-to-time date)))
-           (width (string-width string)))
+           (width (length string)))
       (cond
        ((> width target)
         (if (eq alignment :left)
