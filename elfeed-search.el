@@ -314,6 +314,14 @@ Movement is configured by `elfeed-search-remain-on-entry'."
   (add-hook 'quit-window-hook 'elfeed-db-save nil 'local)
   (elfeed-search-update :force))
 
+;;;###autoload
+(defun elfeed-search ()
+  "Enter elfeed search buffer."
+  (interactive)
+  (switch-to-buffer (elfeed-search-buffer))
+  (unless (eq major-mode 'elfeed-search-mode)
+    (elfeed-search-mode)))
+
 (defun elfeed-search-buffer ()
   "Create and return search buffer."
   (get-buffer-create "*elfeed-search*"))
@@ -1219,7 +1227,7 @@ Sets the :title key of the feed's metadata.  See `elfeed-meta'."
 ;;;###autoload
 (defun elfeed-search-bookmark-handler (record)
   "Jump to an elfeed-search bookmark RECORD."
-  (elfeed)
+  (elfeed-search)
   (elfeed-search-set-filter (bookmark-prop-get record 'location)))
 (put 'elfeed-search-bookmark-handler 'bookmark-handler-type "Elfeed Search")
 
@@ -1244,7 +1252,7 @@ state of the db for when `desktop-auto-save-timeout' is enabled."
 ;;;###autoload
 (defun elfeed-search-desktop-restore (_file-name _buffer-name search-filter)
   "Restore the SEARCH-FILTER of an elfeed-search buffer on desktop restore."
-  (elfeed)
+  (elfeed-search)
   (elfeed-search-set-filter search-filter)
   (current-buffer))
 

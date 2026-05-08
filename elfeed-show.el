@@ -303,7 +303,7 @@ The result depends on the value of `elfeed-show-unique-buffers'."
   "Quit the current window, search again in *elfeed-search*."
   (interactive nil elfeed-show-mode)
   (quit-window)
-  (elfeed)
+  (elfeed-search)
   (elfeed-search-live-filter))
 
 (defun elfeed-show-visit (&optional secondary)

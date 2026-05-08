@@ -48,6 +48,12 @@
 
 (defconst elfeed-version "3.4.2")
 
+(defcustom elfeed-entry-point 'elfeed-search
+  "Entry point for the command `elfeed'."
+  :group 'elfeed
+  :type '(choice (const elfeed-search)
+                 (const elfeed-tree)))
+
 (defcustom elfeed-feeds ()
   "List of all feeds that Elfeed should follow.
 You must add your feeds to this list.
@@ -614,12 +620,7 @@ called interactively, SAVE is set to t."
 (defun elfeed ()
   "Enter elfeed."
   (interactive)
-  ;; elfeed-search.el is required at runtime.
-  (declare-function elfeed-search-buffer "elfeed-search")
-  (declare-function elfeed-search-mode   "elfeed-search")
-  (switch-to-buffer (elfeed-search-buffer))
-  (unless (eq major-mode 'elfeed-search-mode)
-    (elfeed-search-mode)))
+  (funcall elfeed-entry-point))
 
 ;; New entry filtering
 
