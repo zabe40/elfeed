@@ -4,8 +4,8 @@ elfeed-db.elc: elfeed-lib.el
 elfeed-lib.elc:
 elfeed-link.elc: elfeed-db.el elfeed-search.el elfeed-show.el
 elfeed-log.elc:
-elfeed-search.elc: elfeed.el elfeed-db.el elfeed-lib.el
-elfeed-show.elc: elfeed.el elfeed-db.el elfeed-lib.el elfeed-search.el
+elfeed-search.elc: elfeed.el
+elfeed-show.elc: elfeed.el elfeed-search.el
 elfeed.elc: elfeed-db.el elfeed-lib.el elfeed-log.el elfeed-curl.el elfeed-csv.el elfeed-show.el elfeed-search.el
 xml-query.elc:
 tests/elfeed-curl-tests.elc: elfeed-lib.el elfeed-curl.el

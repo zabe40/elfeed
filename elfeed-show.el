@@ -12,8 +12,6 @@
 (require 'shr)
 
 (require 'elfeed)
-(require 'elfeed-db)
-(require 'elfeed-lib)
 (require 'elfeed-search)
 
 (defface elfeed-show-entry-header-face

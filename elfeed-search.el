@@ -16,8 +16,6 @@
 (bookmark-maybe-load-default-file)
 
 (require 'elfeed)
-(require 'elfeed-db)
-(require 'elfeed-lib)
 
 (defvar elfeed-search-entries ()
   "List of the entries currently on display.")
