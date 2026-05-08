@@ -423,20 +423,24 @@ The customization `elfeed-search-date-format' sets the formatting."
                   append faces)
          (list 'elfeed-search-title-face)))
 
+(defun elfeed-search--format-tags (tags)
+  "Format TAGS string."
+  (mapconcat
+   (lambda (s)
+     (propertize (symbol-name s)
+                 'face 'elfeed-search-tag-face
+                 'mouse-face 'highlight 'elfeed-tag s))
+   tags ","))
+
 (defun elfeed-search-print-entry--default (entry)
   "Print ENTRY to the buffer."
-  (let* ((date-float (elfeed-entry-date entry))
+  (let* ((tags (elfeed-entry-tags entry))
+         (date-float (elfeed-entry-date entry))
          (date-str (elfeed-search-format-date date-float))
          (title (or (elfeed-meta--title entry) ""))
-         (title-faces (elfeed-search--faces (elfeed-entry-tags entry)))
+         (title-faces (elfeed-search--faces tags))
          (feed (elfeed-entry-feed entry))
          (feed-title (and feed (elfeed-meta--title feed)))
-         (tags (mapcar #'symbol-name (elfeed-entry-tags entry)))
-         (tags-str (mapconcat
-                    (lambda (s)
-                      (propertize s 'face 'elfeed-search-tag-face
-                                  'mouse-face 'highlight 'elfeed-tag s))
-                    tags ","))
          (window (get-buffer-window))
          (title-width (- (if window (window-width window) (frame-width))
                          10 elfeed-search-trailing-width))
@@ -457,7 +461,7 @@ The customization `elfeed-search-date-format' sets the formatting."
       (insert " " (propertize feed-title 'face 'elfeed-search-feed-face
                               'mouse-face 'highlight 'elfeed-feed-title t)))
     (when tags
-      (insert " (" tags-str ")"))))
+      (insert " (" (elfeed-search--format-tags tags) ")"))))
 
 (defun elfeed-search-parse-filter (filter)
   "Parse the elements of a search FILTER into a plist."
