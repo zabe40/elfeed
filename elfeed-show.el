@@ -255,7 +255,7 @@ Links are relative to BASE-URL if non-nil."
   "Update the buffer to match the selected entry.
 Used as `revert-buffer-function'."
   (declare (completion ignore)) ;; Press "g" or M-x revert-buffer
-  (interactive nil elfeed-show-mode)
+  (interactive)
   (funcall elfeed-show-refresh-function))
 
 (defcustom elfeed-show-unique-buffers nil

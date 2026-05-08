@@ -893,7 +893,7 @@ Otherwise debounce by `elfeed-search-update-delay' and only redraw when
 there are changes.  When called interactively FORCE is t, and the
 command behaves just like `revert-buffer'."
   (declare (completion ignore)) ;; Press "g" or M-x revert-buffer
-  (interactive (list t) elfeed-search-mode)
+  (interactive (list t))
   (when elfeed-search--update-timer
     (cancel-timer elfeed-search--update-timer)
     (setq elfeed-search--update-timer nil))
