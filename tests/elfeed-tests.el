@@ -463,7 +463,7 @@
       (goto-char (point-min))
       (let* ((elfeed-feeds '("http://bar/" ("http://foo/" tag-a :tag-b)))
              (xml (elfeed-xml-parse-region))
-             (entry (cl-first (elfeed-entries-from-atom "http://foo/" xml))))
+             (entry (car (elfeed-entries-from-atom "http://foo/" xml))))
         (should (equal (elfeed-entry-tags entry)
                        (elfeed-normalize-tags '(unread tag-a tag-b))))))))
 

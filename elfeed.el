@@ -660,7 +660,7 @@ The returned function should be added to `elfeed-new-entry-hook'."
         (cl-flet ((match (r s)
                          (or (null r)
                              (if (listp r)
-                                 (not (string-match-p (cl-second r) s))
+                                 (not (string-match-p (cadr r) s))
                                (string-match-p r s)))))
           (when (and
                  (match feed-title  (elfeed-feed-title  feed))
