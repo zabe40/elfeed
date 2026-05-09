@@ -1105,6 +1105,17 @@ the browser defined by `browse-url-secondary-browser-function'."
     (when (member str filter)
       (elfeed-search-set-filter (string-join (delete str filter) " ")))))
 
+(defun elfeed-search--feed-filter (feed)
+  "Create filter string which matches FEED."
+  (concat "=" (string-replace
+               "\\." "."
+               (regexp-quote (elfeed-feed-id feed)))))
+
+(defun elfeed-search--tag-filter (tags)
+  "Create filter string which matches a single or a list TAGS."
+  (mapconcat (lambda (x) (format "+%s" x))
+             (ensure-list tags) " "))
+
 (defun elfeed-search-header-click (event)
   "Handle click EVENT on the header line of the search buffer."
   (declare (completion ignore))
@@ -1129,14 +1140,9 @@ the browser defined by `browse-url-secondary-browser-function'."
        ((setq obj (get-text-property pos 'elfeed-date))
         (elfeed-search--add-filter (concat "@" (elfeed-search-format-date obj))))
        ((setq obj (get-text-property pos 'elfeed-tag))
-        (elfeed-search--add-filter
-         (mapconcat (lambda (x) (format "+%s" x))
-                    (ensure-list obj) " ")))
+        (elfeed-search--add-filter (elfeed-search--tag-filter obj)))
        ((setq obj (get-text-property pos 'elfeed-feed))
-        (elfeed-search--add-filter
-         (concat "=" (string-replace
-                      "\\." "."
-                      (regexp-quote (elfeed-feed-id obj))))))
+        (elfeed-search--add-filter (elfeed-search--feed-filter obj)))
        ((setq obj (and (get-text-property pos 'elfeed-entry-title)
                        (get-text-property pos 'elfeed-entry)))
         (elfeed-search-show-entry obj))))))
