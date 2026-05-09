@@ -530,13 +530,20 @@ Only a list of strings will be returned."
   (run-hook-with-args 'elfeed-parse-error-hooks url error)
   (elfeed-log 'error "%s: %s" url error))
 
+(defun elfeed--prompt-feed ()
+  "Prompt for feed URL via `completing-read'."
+  (let ((url (completing-read "Feed: "
+                              (completion-table-with-metadata
+                               (elfeed-feed-list)
+                               '((category . url)))
+                              nil t)))
+    (when (equal url "")
+      (user-error "No feed selected"))
+    url))
+
 (defun elfeed-update-feed (url)
   "Update a specific feed identified by URL."
-  (interactive (list (completing-read
-                      "Feed: "
-                      (completion-table-with-metadata
-                       (elfeed-feed-list)
-                       '((category . url))))))
+  (interactive (list (elfeed--prompt-feed)))
   (unless elfeed--inhibit-update-init-hooks
     (run-hooks 'elfeed-update-init-hooks))
   (elfeed-with-fetch url
