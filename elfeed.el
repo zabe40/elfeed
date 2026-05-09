@@ -247,7 +247,7 @@ This is a workaround for issues in `url-queue-retrieve'."
             elfeed-curl-queue-active 0)
     (when-let* ((fails (mapcar #'url-queue-url url-queue)))
       (elfeed-log 'warn "Elfeed aborted feeds: %s"
-                  (mapconcat #'identity fails " ")))
+                  (string-join fails " ")))
     (setf url-queue nil))
   (run-hooks 'elfeed-update-init-hooks))
 

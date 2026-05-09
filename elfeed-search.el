@@ -571,7 +571,7 @@ original, but will be equal in its effect."
         (push (format "=%s" feed) output))
       (dolist (feed not-feeds)
         (push (format "~%s" feed) output))
-      (mapconcat #'identity (nreverse output) " "))))
+      (string-join (nreverse output) " "))))
 
 (defun elfeed-search-filter (filter entry feed &optional count)
   "Return non-nil if ENTRY and FEED pass FILTER.
@@ -1044,7 +1044,7 @@ the browser defined by `browse-url-secondary-browser-function'."
   (interactive nil elfeed-search-mode)
   (let* ((entries (elfeed-search-selected))
          (links (mapcar #'elfeed-entry-link entries))
-         (links-str (mapconcat #'identity links " ")))
+         (links-str (string-join links " ")))
     (when entries
       (elfeed-untag entries 'unread)
       (kill-new links-str)
