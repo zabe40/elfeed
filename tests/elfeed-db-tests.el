@@ -111,6 +111,23 @@
         (cl-loop repeat count collect (elfeed-test-generate-entry feed))))
      (should (= (elfeed-db-size) count)))))
 
+(ert-deftest elfeed-db-delete ()
+  (with-elfeed-test
+   (let* ((feed (elfeed-test-generate-feed))
+          (keep (cl-loop repeat 10 collect (elfeed-test-generate-entry feed)))
+          (del (cl-loop repeat 10 collect (elfeed-test-generate-entry feed))))
+     (elfeed-db-add keep)
+     (elfeed-db-add del)
+     (should (= (elfeed-db-size) 20))
+     (dolist (entry (append keep del))
+       (should (eq entry (elfeed-db-get-entry (elfeed-entry-id entry)))))
+     (elfeed-db-delete del)
+     (should (= (elfeed-db-size) 10))
+     (dolist (entry keep)
+       (should (eq entry (elfeed-db-get-entry (elfeed-entry-id entry)))))
+     (dolist (entry del)
+       (should (null (elfeed-db-get-entry (elfeed-entry-id entry))))))))
+
 (ert-deftest elfeed-db-merge ()
   (with-elfeed-test
     (let* ((feed (elfeed-test-generate-feed))

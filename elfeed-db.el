@@ -172,6 +172,17 @@ Return non-nil if an actual update occurred, not counting content."
              (elfeed-db-set-update-time)))
   :success)
 
+(defun elfeed-db-delete (entries)
+  "Delete ENTRIES from database."
+  (elfeed-db-ensure)
+  (when entries
+    (dolist (entry entries)
+      (let ((id (elfeed-entry-id entry)))
+        (avl-tree-delete elfeed-db-index id)
+        (remhash id elfeed-db-entries)))
+    (elfeed-db-set-update-time))
+  :success)
+
 (defun elfeed-entry-feed (entry)
   "Get the feed struct for ENTRY."
   (elfeed-db-get-feed (elfeed-entry-feed-id entry)))
