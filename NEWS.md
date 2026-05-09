@@ -1,5 +1,41 @@
 # Changes
 
+## Development
+
+* New command `elfeed-tree` which opens an `elfeed-tree-mode` buffer.
+* New customization option `elfeed-entry-point` to customize `M-x elfeed`.
+* New command `elfeed-search` as entry point.
+* Search filter and tag completion.
+* New binding `B` for command which opens entries in the secondary browser
+  `elfeed-search-browse-url-secondary`.
+* `elfeed-confirm-browse-url`: New customization option.
+* Generalized `elfeed-search-remain-on-entry` option to support customizing the
+  commands that should remain on the entry.
+* Auto-resizing of title column.
+* Debounced search buffer update, see `elfeed-search-update-delay`.
+* Parsing via libxml, see `elfeed-use-libxml`.
+* All Elfeed major modes derive from `special-mode`.
+* Change `elfeed-db-directory` to default to `~/.config/emacs/elfeed`. The
+  change is backward compatible. If `~/.elfeed` is present, it will be used.
+* Hide irrelevant commands in `M-x` if `read-extended-command-predicate` is
+  set to `command-completion-default-include-p`.
+* Support shorter age filter syntax, e.g., `@6months`.
+* Mouse menus for all Elfeed major modes.
+* Mouse support in the search buffer and the header line.
+* Attach `elfeed-entry`, `elfeed-feed` and `elfeed-tag` text properties in
+  buffer text for more efficient lookup and mouse support.
+* New faces in `elfeed-show` buffer, instead of using the faces from message.el.
+* Add `t` and `T` key bindings to change entry and feed title.
+* Reduce risk for database corruptions by writing to temporary files first and
+  renaming atomically afterwards.
+* Make `*elfeed-log*` ephemeral by default with a space in front of the buffer
+  name.
+* Show entry title and search filter in Ibuffer.
+* Moved elfeed-web.el to a separate repository.
+* Removed obsolete code and updated for Emacs 31.
+* Added Compat 31 dependency.
+* Many fixes and robustness improvements.
+
 ## 3.4.2 (2024-07-29)
 
 * Fix `browse-url` usage (243add9e)
