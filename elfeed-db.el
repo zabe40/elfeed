@@ -90,11 +90,13 @@ This is a chance to add custom tags to new entries.")
 
 ;; Data model:
 
-(cl-defstruct (elfeed-feed (:constructor elfeed-feed--create))
+(cl-defstruct (elfeed-feed (:constructor elfeed-feed--create)
+                           (:copier elfeed-feed--copy))
   "A web feed, contains elfeed-entry structs."
   id url title author meta)
 
-(cl-defstruct (elfeed-entry (:constructor elfeed-entry--create))
+(cl-defstruct (elfeed-entry (:constructor elfeed-entry--create)
+                            (:copier elfeed-entry--copy))
   "A single entry from a feed, normalized towards Atom."
   id title link date content content-type enclosures tags feed-id meta)
 
@@ -488,7 +490,8 @@ Return DEFAULT if unavailable."
 (defvar elfeed-ref-cache nil
   "Temporary storage of the full archive content.")
 
-(cl-defstruct (elfeed-ref (:constructor elfeed-ref--create))
+(cl-defstruct (elfeed-ref (:constructor elfeed-ref--create)
+                          (:copier elfeed-ref--copy))
   id)
 
 (defun elfeed-ref--file (ref)
@@ -663,6 +666,13 @@ gzip-compressed files, so the gzip program must be in your PATH."
 (unless noninteractive
   (add-hook 'kill-emacs-hook #'elfeed-db-gc-safe :append)
   (add-hook 'kill-emacs-hook #'elfeed-db-save-safe))
+
+(define-obsolete-function-alias 'copy-elfeed-entry
+  #'elfeed-entry--copy "3.4.2")
+(define-obsolete-function-alias 'copy-elfeed-feed
+  #'elfeed-feed--copy "3.4.2")
+(define-obsolete-function-alias 'copy-elfeed-ref
+  #'elfeed-ref--copy "3.4.2")
 
 (provide 'elfeed-db)
 ;;; elfeed-db.el ends here
