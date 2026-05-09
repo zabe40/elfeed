@@ -3,7 +3,6 @@
 ## 3.4.2 (2024-07-29)
 
 * Fix `browse-url` usage (243add9e)
-
 * Deal with various warnings from recent Emacs releases
 
 ## 3.4.1 (2021-02-25)
@@ -13,65 +12,45 @@
 ## 3.4.0 (2021-01-30)
 
 * New search filter: ~ excludes matching feeds
-
 * Support fetching feeds via file://
-
 * Support fetching feeds via the Gopher protocol
-
 * "End of entries" no longer appears in elfeed-search
-
 * Support bookmarks in entries
-
 * New customizations: elfeed-show-entry-switch, elfeed-show-entry-delete
-
 * More extensive information from elfeed-curl-get-capabilities
-
 * New elfeed-show command: elfeed-kill-link-url-at-point (c)
-
 * Various other minor behavior improvements
 
 ## 3.3.0 (2019-11-23)
 
 * New option: `elfeed-search-remain-on-entry`.
-
 * More graceful handling of feed filters (=).
-
 * Fix minor time handling issue with Emacs >= 26.1
-
 * Load bookmarks before trying to use them.
 
 ## 3.2.0 (2019-08-24)
 
 * Support for absolute date/time expressions in filters. See README.md
   for documentation and examples.
-
 * curl's `--disable` is now default. To load your .curlrc file, use
   `--config` explicitly in `elfeed-curl-extra-arguments`.
-
 * Re-enable curl's HTTP/2 support.
-
 * Function `elfeed-next-link` was renamed to `elfeed-show-next-link`.
-
 * New search buffer bindings: <, >, h, c
-
 * Multiple authors are now parsed from entries. Reflecting this, the
   meta key for authors is now `:authors` instead of `:author`. The
   value is always a list of zero or more authors.
-
 * New variable: `elfeed-show-unique-buffers`. Allows for displaying
   multiple show buffers at the same time.
-
 * Various minor fixes and improvements.
 
 ## 3.1.0 (2018-08-29)
 
 * Add `elfeed-show-enclosure-filename-function` for controlling
   enclosure filenames.
-
 * Dynamically enable/disable --compressed curl option. On some systems
   curl is built without this option, so it causes errors when it is
   used.
-
 * Minor documentation fixes.
 
 ## 3.0.0 (2018-05-13)
