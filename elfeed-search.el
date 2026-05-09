@@ -316,7 +316,7 @@ Movement is configured by `elfeed-search-remain-on-entry'."
 
 ;;;###autoload
 (defun elfeed-search ()
-  "Enter elfeed search buffer."
+  "Enter `elfeed-search' buffer."
   (interactive)
   (switch-to-buffer (elfeed-search-buffer))
   (unless (eq major-mode 'elfeed-search-mode)
@@ -397,12 +397,12 @@ The customization `elfeed-search-date-format' sets the formatting."
   :group 'elfeed)
 
 (defcustom elfeed-search-title-max-width 70
-  "Maximum column width for titles in the elfeed-search buffer."
+  "Maximum column width for titles in the `elfeed-search' buffer."
   :group 'elfeed
   :type 'integer)
 
 (defcustom elfeed-search-title-min-width 16
-  "Minimum column width for titles in the elfeed-search buffer."
+  "Minimum column width for titles in the `elfeed-search' buffer."
   :group 'elfeed
   :type 'integer)
 
@@ -780,7 +780,7 @@ Use the default value of the variable `elfeed-search-filter'."
   (elfeed-search-update :force))
 
 (defun elfeed-search-set-filter (new-filter)
-  "Set a new search filter for the elfeed-search buffer.
+  "Set a new search filter for the `elfeed-search' buffer.
 
 When NEW-FILTER is nil, reset the filter to the default value.
 
@@ -888,7 +888,7 @@ But keep entry, line and column instead of only point."
        (save-mark-and-excursion--restore ,mark-pos)))))
 
 (defun elfeed-search-update (&optional force)
-  "Update the elfeed-search buffer listing to match the database.
+  "Update the `elfeed-search' buffer listing to match the database.
 When FORCE is non-nil, redraw even when the database hasn't changed.
 Otherwise debounce by `elfeed-search-update-delay' and only redraw when
 there are changes.  When called interactively FORCE is t, and the
@@ -913,7 +913,7 @@ command behaves just like `revert-buffer'."
     (put-text-property beg (point) 'elfeed-entry entry)))
 
 (defun elfeed-search--update-immediately (buffer &optional method)
-  "Immediately update the elfeed-search BUFFER.
+  "Immediately update the `elfeed-search' BUFFER.
 METHOD can be nil, :force to force a full entry update and redraw or
 :preserve to preserve the entries and redraw.  Do not use this function
 directly.  Instead use `elfeed-search-update'."
@@ -994,7 +994,7 @@ Given a prefix, this function becomes `elfeed-search-fetch-visible'."
         (elfeed-search--print-entry entry)))))
 
 (defun elfeed-search-update-entry (entry)
-  "Redraw ENTRY in the elfeed-search buffer."
+  "Redraw ENTRY in the `elfeed-search' buffer."
   (when-let* ((n (cl-position entry elfeed-search-entries)))
     (elfeed-search-update-line (1+ n))))
 
@@ -1102,13 +1102,13 @@ the browser defined by `browse-url-secondary-browser-function'."
     (elfeed-show-entry entry)))
 
 (defun elfeed-search--add-filter (str)
-  "Add STR to `elfeed-search-filter'."
+  "Add STR to variable `elfeed-search-filter'."
   (let ((filter (split-string elfeed-search-filter)))
     (unless (member str filter)
       (elfeed-search-set-filter (string-join (append filter (list str)) " ")))))
 
 (defun elfeed-search--remove-filter (str)
-  "Remove STR from `elfeed-search-filter'."
+  "Remove STR from variable `elfeed-search-filter'."
   (let ((filter (split-string elfeed-search-filter)))
     (when (member str filter)
       (elfeed-search-set-filter (string-join (delete str filter) " ")))))
@@ -1201,7 +1201,7 @@ Sets the :title key of the feed's metadata.  See `elfeed-meta'."
 (add-hook 'minibuffer-setup-hook 'elfeed-search--minibuffer-setup)
 
 (defun elfeed-search--live-update ()
-  "Update the elfeed-search buffer based on the contents of the minibuffer."
+  "Update the `elfeed-search' buffer based on the contents of the minibuffer."
   (when (eq :live elfeed-search-filter-active)
     (let ((current-filter (minibuffer-contents-no-properties)))
       (with-current-buffer (elfeed-search-buffer)
@@ -1214,7 +1214,7 @@ Sets the :title key of the feed's metadata.  See `elfeed-meta'."
                 (length= elfeed-search-entries height)))))))
 
 (defun elfeed-search-live-filter ()
-  "Filter the elfeed-search buffer as the filter is written."
+  "Filter the `elfeed-search' buffer as the filter is written."
   (interactive nil elfeed-search-mode)
   (unwind-protect
       (let ((elfeed-search-filter-active :live))
@@ -1226,13 +1226,13 @@ Sets the :title key of the feed's metadata.  See `elfeed-meta'."
 
 ;;;###autoload
 (defun elfeed-search-bookmark-handler (record)
-  "Jump to an elfeed-search bookmark RECORD."
+  "Jump to an `elfeed-search' bookmark RECORD."
   (elfeed-search)
   (elfeed-search-set-filter (bookmark-prop-get record 'location)))
 (put 'elfeed-search-bookmark-handler 'bookmark-handler-type "Elfeed Search")
 
 (defun elfeed-search-bookmark-make-record ()
-  "Return a bookmark record for the current elfeed-search buffer."
+  "Return a bookmark record for the current `elfeed-search' buffer."
   (let* ((filter (elfeed-search-parse-filter elfeed-search-filter))
          (tags (plist-get filter :must-have)))
     `(,(format "elfeed %s" elfeed-search-filter)
@@ -1243,7 +1243,7 @@ Sets the :title key of the feed's metadata.  See `elfeed-meta'."
 ;; Desktop Save
 
 (defun elfeed-search-desktop-save (_desktop-dirname)
-  "Save the state of the current elfeed-search buffer.
+  "Save the state of the current `elfeed-search' buffer.
 The state may be restored as part of a saved desktop.  Also save the
 state of the db for when `desktop-auto-save-timeout' is enabled."
   (elfeed-db-save)
@@ -1251,7 +1251,7 @@ state of the db for when `desktop-auto-save-timeout' is enabled."
 
 ;;;###autoload
 (defun elfeed-search-desktop-restore (_file-name _buffer-name search-filter)
-  "Restore the SEARCH-FILTER of an elfeed-search buffer on desktop restore."
+  "Restore the SEARCH-FILTER of an `elfeed-search' buffer on desktop restore."
   (elfeed-search)
   (elfeed-search-set-filter search-filter)
   (current-buffer))
