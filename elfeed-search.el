@@ -223,6 +223,7 @@ Movement is configured by `elfeed-search-remain-on-entry'."
   "Create header line button for COMMAND with optional TEXT."
   (propertize (or text (symbol-name command))
               'elfeed-header-button command
+              'help-echo (format "Run %s" command)
               'mouse-face 'highlight))
 
 (defun elfeed-search--intro-header ()
@@ -273,11 +274,13 @@ Movement is configured by `elfeed-search-remain-on-entry'."
                      (mapconcat
                       (lambda (x)
                         (elfeed-add-properties
-                         x 'mouse-face 'highlight 'elfeed-header-filter x))
+                         x 'mouse-face 'highlight
+                         'help-echo "Remove filter"
+                         'elfeed-header-filter x))
                       (split-string elfeed-search-filter) " "))
                     (""))))
       (concat
-       (elfeed-search--header-button #'elfeed-search-fetch
+       (elfeed-search--header-button #'elfeed-update
                                      (concat "Updated " update))
        ", " unread (and (not (equal filter "")) ", ") filter)))))
 
