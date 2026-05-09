@@ -2,6 +2,8 @@
 
 ;; This is free and unencumbered software released into the public domain.
 
+;; Author: Christopher Wellons <wellons@nullprogram.com>
+
 ;;; Commentary:
 
 ;; Elfeed's logging system.

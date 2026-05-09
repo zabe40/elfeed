@@ -2,6 +2,8 @@
 
 ;; This is free and unencumbered software released into the public domain.
 
+;; Author: Christopher Wellons <wellons@nullprogram.com>
+
 ;;; Commentary:
 
 ;; These are general functions that aren't specific to web feeds.  It's
