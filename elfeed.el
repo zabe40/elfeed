@@ -617,6 +617,22 @@ called interactively, SAVE is set to t."
     (customize-save-variable 'elfeed-feeds elfeed-feeds))
   (elfeed-update-feed url))
 
+(defun elfeed-delete-feed (url)
+  "Delete feed identified by URL from the database."
+  (interactive (list (elfeed--prompt-feed)))
+  (let (entries)
+    (with-elfeed-db-visit (entry feed)
+      (when (equal (elfeed-feed-id feed) url)
+        (push entry entries)))
+    (when (y-or-n-p (format "Really delete %d entries of feed %s? "
+                            (length entries) url))
+      (elfeed-db-delete entries)
+      (elfeed-db-gc-empty-feeds)
+      (setq elfeed-feeds (assoc-delete-all
+                          url (delete url (copy-sequence elfeed-feeds))))
+      (message "Deleted feed %s. Adjust `elfeed-feeds' in your configuration!" url)
+      (run-hook-with-args 'elfeed-update-hooks url))))
+
 ;;;###autoload
 (defun elfeed-update ()
   "Update all the feeds in `elfeed-feeds'."
