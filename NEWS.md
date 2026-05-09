@@ -43,8 +43,9 @@
   database.
 * Moved elfeed-web.el to the separate repository at
   https://github.com/emacs-elfeed/elfeed-web.
-* Removed obsolete code and code updated for Emacs 31.
+* Removed obsolete code and code updated for upcoming Emacs 31.
 * Added Compat 31 dependency.
+* Depend on Emacs 28.1.
 * Many small fixes and robustness improvements.
 
 ## 3.4.2 (2024-07-29)
