@@ -284,7 +284,7 @@ The result depends on the value of `elfeed-show-unique-buffers'."
     (funcall elfeed-show-entry-switch buff)))
 
 (defun elfeed-show-next (&optional n)
-  "Show the Nth next item in the elfeed-search buffer."
+  "Show the Nth next item in the `elfeed-search' buffer."
   (interactive "p" elfeed-show-mode)
   (funcall elfeed-show-entry-delete)
   (with-selected-window (or (get-buffer-window (elfeed-search-buffer))
@@ -295,12 +295,12 @@ The result depends on the value of `elfeed-show-unique-buffers'."
       (call-interactively #'elfeed-search-show-entry))))
 
 (defun elfeed-show-prev (&optional n)
-  "Show the Nth previous item in the elfeed-search buffer."
+  "Show the Nth previous item in the `elfeed-search' buffer."
   (interactive "p" elfeed-show-mode)
   (elfeed-show-next (- (or n 1))))
 
 (defun elfeed-show-new-live-search ()
-  "Quit the current window, search again in *elfeed-search*."
+  "Quit the current window, search again in the `elfeed-search' buffer."
   (interactive nil elfeed-show-mode)
   (quit-window)
   (elfeed-search)
