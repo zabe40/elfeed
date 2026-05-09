@@ -2,39 +2,50 @@
 
 ## Development
 
-* New command `elfeed-tree` which opens an `elfeed-tree-mode` buffer.
-* New customization option `elfeed-entry-point` to customize `M-x elfeed`.
-* New command `elfeed-search` as entry point.
-* Search filter and tag completion.
-* New binding `B` for command which opens entries in the secondary browser
-  `elfeed-search-browse-url-secondary`.
+* `elfeed-tree`: New command which opens an `elfeed-tree-mode` buffer.
+* `elfeed-entry-point`: New customization option to customize `M-x elfeed`.
+* `elfeed-search`: New command as entry point.
+* `elfeed-search-set-filter`, `elfeed-search-tag-all`: Filter and tag completion
+  using `completing-read-multiple`.
+* `elfeed-search-browse-url-secondary`, `elfeed-show-visit-secondary`: New
+  commands which open entries in the secondary browser. The commands are bound
+  to the key `B`.
 * `elfeed-confirm-browse-url`: New customization option.
-* Generalized `elfeed-search-remain-on-entry` option to support customizing the
-  commands that should remain on the entry.
-* Auto-resizing of title column.
-* Debounced search buffer update, see `elfeed-search-update-delay`.
-* Parsing via libxml, see `elfeed-use-libxml`.
-* All Elfeed major modes derive from `special-mode`.
-* Change `elfeed-db-directory` to default to `~/.config/emacs/elfeed`. The
-  change is backward compatible. If `~/.elfeed` is present, it will be used.
+* `elfeed-search-remain-on-entry`: Generalized option to configure the
+  commands explicitly that should remain on the entry.
+* `elfeed-search-mode`: Auto-resizing of title column.
+* `elfeed-search-update-delay`: New customization option to debounce search
+  buffer update.
+* `elfeed-use-libxml`: New customization option to enable parsing via `libxml`.
+* `elfeed-search-mode`, `elfeed-show-mode`, `elfeed-tree-mode`: All Elfeed major
+  modes derive from `special-mode`.
+* `elfeed-db-directory`: Change default to `~/.config/emacs/elfeed`. The change
+  is backward compatible. If `~/.elfeed` is present, it will be used.
 * Hide irrelevant commands in `M-x` if `read-extended-command-predicate` is
   set to `command-completion-default-include-p`.
-* Support shorter age filter syntax, e.g., `@6months`.
-* Mouse menus for all Elfeed major modes.
+* `elfeed-search-set-filter`: Support shorter age filter syntax, e.g., `@6months`.
+* New mouse menus in all Elfeed major modes.
 * Mouse support in the search buffer and the header line.
-* Attach `elfeed-entry`, `elfeed-feed` and `elfeed-tag` text properties in
-  buffer text for more efficient lookup and mouse support.
-* New faces in `elfeed-show` buffer, instead of using the faces from message.el.
-* Add `t` and `T` key bindings to change entry and feed title.
-* Reduce risk for database corruptions by writing to temporary files first and
-  renaming atomically afterwards.
-* Make `*elfeed-log*` ephemeral by default with a space in front of the buffer
-  name.
-* Show entry title and search filter in Ibuffer.
-* Moved elfeed-web.el to a separate repository.
-* Removed obsolete code and updated for Emacs 31.
+* `elfeed-search`, `elfeed-tree`: Attach `elfeed-entry`, `elfeed-feed` and
+  `elfeed-tag` text properties in buffer text for more efficient lookup and
+  mouse support.
+* `elfeed-show-*-face`: New faces in `elfeed-show` buffer, which are used
+  instead of the faces from message.el.
+* `elfeed-search-set-entry-title`, `elfeed-search-set-feed-title`: Add `t` and
+  `T` key bindings to change entry and feed title.
+* `elfeed-db-save`, `elfeed-db-pack`: Reduce risk for database corruptions by
+  writing to temporary files first and renaming atomically afterwards.
+* `elfeed-log-buffer-name`: Make `*elfeed-log*` ephemeral by default with a
+  space in front of the buffer name.
+* `elfeed-search-mode`, `elfeed-show-mode`: Show entry title and search filter
+  in Ibuffer.
+* `elfeed-delete-feed`: New command to delete feed with all entries from the
+  database.
+* Moved elfeed-web.el to the separate repository at
+  https://github.com/emacs-elfeed/elfeed-web.
+* Removed obsolete code and code updated for Emacs 31.
 * Added Compat 31 dependency.
-* Many fixes and robustness improvements.
+* Many small fixes and robustness improvements.
 
 ## 3.4.2 (2024-07-29)
 
