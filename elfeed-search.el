@@ -253,6 +253,7 @@ Movement is configured by `elfeed-search-remain-on-entry'."
 (defun elfeed-search--header ()
   "Computes the string to be used as the Elfeed header."
   (cond
+   ((not elfeed-db) "Database not loaded.")
    ((zerop (elfeed-db-last-update))
     (elfeed-search--intro-header))
    ((> (elfeed-queue-count-total) 0)
