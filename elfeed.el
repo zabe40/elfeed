@@ -270,11 +270,11 @@ This is a workaround for issues in `url-queue-retrieve'."
 (defun elfeed--atom-content (entry)
   "Get content string from ENTRY. If there is no content tag, use summary instead."
   (let ((content-type (or (xml-query* (content :type) entry)
-			  (xml-query* (summary :type) entry))))
+                          (xml-query* (summary :type) entry))))
     (if (equal content-type "xhtml")
         (with-temp-buffer
           (let ((xhtml (cddr (or (xml-query* (content) entry)
-				 (xml-query* (summary) entry)))))
+                                 (xml-query* (summary) entry)))))
             (dolist (element xhtml)
               (if (stringp element)
                   (insert element)
