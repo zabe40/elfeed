@@ -241,7 +241,7 @@ the format (title unread read feed tags).  The tag list entries have the
 format (tag unread read)."
   (let ((feeds-ht (make-hash-table :test #'equal))
         (tags-ht (make-hash-table :test #'eq)))
-    (with-elfeed-db-visit (entry feed)
+    (elfeed-db-visit (entry feed)
       (let* ((tags (elfeed-entry-tags entry))
              (unread (memq 'unread tags))
              (feed-id (elfeed-feed-id feed)))

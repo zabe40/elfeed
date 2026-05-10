@@ -33,7 +33,7 @@
 ;; maintained as part of the database.  We almost always want to look
 ;; at entries ordered by date and this step accomplished that very
 ;; efficiently with the AVL tree.  This is the reasoning behind the
-;; `with-elfeed-db-visit' interface.
+;; `elfeed-db-visit' interface.
 
 ;; Unfortunately there's a nasty bug (bug#15190) in the reader that
 ;; makes hash tables and `print-circle' incompatible.  It's been fixed
@@ -226,17 +226,17 @@ Additional tag lists can be given as MORE-TAGS."
   (elfeed-db-ensure)
   (or (plist-get elfeed-db :last-update) 0))
 
-(defmacro with-elfeed-db-visit (binds &rest body)
+(defmacro elfeed-db-visit (binds &rest body)
   "Visit each entry in the database from newest to oldest.
 Use `elfeed-db-return' to exit early and optionally return data.
 BINDS are the bindings for entry and optionally feed around BODY.
 
-  (with-elfeed-db-visit (entry feed)
+  (elfeed-db-visit (entry feed)
     (do-something entry)
     (when (some-date-criteria-p entry)
       (elfeed-db-return)))
 
-  (with-elfeed-db-visit (entry)
+  (elfeed-db-visit (entry)
     ...)"
   (declare (indent defun))
   `(catch 'elfeed-db-done
@@ -251,6 +251,11 @@ BINDS are the bindings for entry and optionally feed around BODY.
             ,@body))
         elfeed-db-index))))
 
+;; I prefer if everything lives inside the elfeed-* namespace. Nevertheless keep
+;; the old name for backward compatibility, since it is widely used in packages
+;; depending on Elfeed.
+(defalias 'with-elfeed-db-visit #'elfeed-db-visit)
+
 (defun elfeed-feed-entries (feed-or-id)
   "Return a list of all entries for a particular feed.
 The FEED-OR-ID may be a feed struct or a feed ID (url)."
@@ -258,7 +263,7 @@ The FEED-OR-ID may be a feed struct or a feed ID (url)."
                      (elfeed-feed-id feed-or-id)
                    feed-or-id)))
     (let ((entries))
-      (with-elfeed-db-visit (entry feed)
+      (elfeed-db-visit (entry feed)
         (when (equal (elfeed-feed-id feed) feed-id)
           (push entry entries)))
       (nreverse entries))))
@@ -266,17 +271,17 @@ The FEED-OR-ID may be a feed struct or a feed ID (url)."
 (defun elfeed-apply-hooks-now ()
   "Apply `elfeed-new-entry-hook' to all entries in the database."
   (interactive)
-  (with-elfeed-db-visit (entry _)
+  (elfeed-db-visit (entry _)
     (run-hook-with-args 'elfeed-new-entry-hook entry)))
 
 (defmacro elfeed-db-return (&optional value)
-  "Use this to exit early and return VALUE from `with-elfeed-db-visit'."
+  "Use this to exit early and return VALUE from `elfeed-db-visit'."
   `(throw 'elfeed-db-done ,value))
 
 (defun elfeed-db-get-all-tags ()
   "Return a list of all tags currently in the database."
   (let ((table (make-hash-table :test 'eq)))
-    (with-elfeed-db-visit (e _)
+    (elfeed-db-visit (e _)
       (dolist (tag (elfeed-entry-tags e))
         (setf (gethash tag table) tag)))
     (let ((tags ()))
@@ -596,7 +601,7 @@ Return DEFAULT if unavailable."
 (defun elfeed-db-gc-empty-feeds ()
   "Remove feeds with no entries from the database."
   (let ((seen (make-hash-table :test 'equal)))
-    (with-elfeed-db-visit (entry feed)
+    (elfeed-db-visit (entry feed)
       (setf (gethash (elfeed-feed-id feed) seen) feed))
     (maphash (lambda (id _)
                (unless (gethash id seen)
@@ -613,7 +618,7 @@ If STATS-P is true, return the space cleared in bytes."
          (table (make-hash-table :test 'equal)))
     (dolist (id ids)
       (setf (gethash id table) nil))
-    (with-elfeed-db-visit (entry _)
+    (elfeed-db-visit (entry _)
       (let ((content (elfeed-entry-content entry)))
         (when (elfeed-ref-p content)
           (setf (gethash (elfeed-ref-id content) table) t))))
@@ -641,7 +646,7 @@ If STATS-P is true, return the space cleared in bytes."
          (packed ()))
     (make-directory (expand-file-name "data" elfeed-db-directory) t)
     (with-temp-file content-temp
-      (with-elfeed-db-visit (entry _)
+      (elfeed-db-visit (entry _)
         (let ((ref (elfeed-entry-content entry))
               (start (1- (point))))
           (when (elfeed-ref-p ref)

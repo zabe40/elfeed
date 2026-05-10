@@ -164,7 +164,7 @@
                 (cl-loop repeat 10 collect (elfeed-test-generate-entry feed))))
    (let ((entries nil)
          (feeds nil))
-     (with-elfeed-db-visit (entry feed)
+     (elfeed-db-visit (entry feed)
        (push (elfeed-entry-date entry) entries)
        (cl-pushnew feed feeds :test #'equal))
      ;; All entries should have appeared.
@@ -174,7 +174,7 @@
      ;; All entries should have appeared in date order
      (should (equal (sort (copy-sequence entries) #'<) entries)))
    (let ((entries nil))
-     (with-elfeed-db-visit (entry)
+     (elfeed-db-visit (entry)
        (push (elfeed-entry-date entry) entries))
      ;; All entries should have appeared.
      (should (= (length entries) 80))
@@ -200,7 +200,7 @@
      (should updated-p)
      (let ((collected nil)
            (sorted nil))
-       (with-elfeed-db-visit (entry _)
+       (elfeed-db-visit (entry _)
          (push (elfeed-entry-date entry) collected))
        (setf sorted (sort (copy-sequence collected) #'<))
        (should (equal collected sorted))))))

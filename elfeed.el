@@ -520,7 +520,7 @@ Only a list of strings will be returned."
 (defun elfeed-apply-autotags-now ()
   "Apply autotags to existing entries according to `elfeed-feeds'."
   (interactive)
-  (with-elfeed-db-visit (entry feed)
+  (elfeed-db-visit (entry feed)
     (apply #'elfeed-tag entry (elfeed-feed-autotags feed))))
 
 (defun elfeed-handle-http-error (url status)
@@ -626,7 +626,7 @@ called interactively, SAVE is set to t."
   "Delete feed identified by URL from the database."
   (interactive (list (elfeed--prompt-feed)))
   (let (entries)
-    (with-elfeed-db-visit (entry feed)
+    (elfeed-db-visit (entry feed)
       (when (equal (elfeed-feed-id feed) url)
         (push entry entries)))
     (when (y-or-n-p (format "Really delete %d entries of feed %s? "

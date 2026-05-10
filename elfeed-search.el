@@ -581,7 +581,7 @@ filtering against a limit filter (example: #10).
 
 See `elfeed-search-set-filter' for format/syntax documentation.
 This function must *only* be called within the body of
-`with-elfeed-db-visit' because it may perform a non-local exit."
+`elfeed-db-visit' because it may perform a non-local exit."
   (cl-destructuring-bind (&key must-have must-not-have
                                matches   not-matches
                                feeds     not-feeds
@@ -835,12 +835,12 @@ expression, matching against entry link, title, and feed title."
         ;; stack-ref opcode instead of the traditional varref opcode.
         (let ((lexical-binding t)
               (func (byte-compile (elfeed-search-compile-filter filter))))
-          (with-elfeed-db-visit (entry feed)
+          (elfeed-db-visit (entry feed)
             (when (funcall func entry feed count)
               (setf (cdr tail) (list entry)
                     tail (cdr tail)
                     count (1+ count)))))
-      (with-elfeed-db-visit (entry feed)
+      (elfeed-db-visit (entry feed)
         (when (elfeed-search-filter filter entry feed count)
           (setf (cdr tail) (list entry)
                 tail (cdr tail)

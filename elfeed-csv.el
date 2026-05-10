@@ -148,7 +148,7 @@ CREATE TABLE tags (
       (with-current-buffer tags-buffer
         (elfeed-csv-insert [entry feed tag])))
     ;; Write data
-    (with-elfeed-db-visit (entry feed)
+    (elfeed-db-visit (entry feed)
       (unless (gethash feed seen)
         (setf (gethash feed seen) t)
         (let ((url (elfeed-feed-url feed))
