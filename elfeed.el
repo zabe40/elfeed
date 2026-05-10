@@ -49,10 +49,13 @@
 (defconst elfeed-version "3.4.2")
 
 (defcustom elfeed-entry-point 'elfeed-search
-  "Entry point for the command `elfeed'."
+  "Entry point for the command `elfeed'.
+You can set this either to the search or the tree command, or an
+alternative custom command if you use another custom frontend."
   :group 'elfeed
-  :type '(choice (const elfeed-search)
-                 (const elfeed-tree)))
+  :type '(choice (const :tag "Search buffer" elfeed-search)
+                 (const :tag "Tree buffer" elfeed-tree)
+                 (command :tag "Custom command")))
 
 (defcustom elfeed-feeds ()
   "List of all feeds that Elfeed should follow.
@@ -646,9 +649,9 @@ called interactively, SAVE is set to t."
 
 ;;;###autoload
 (defun elfeed ()
-  "Enter elfeed."
+  "Enter elfeed via `elfeed-entry-point'."
   (interactive)
-  (funcall elfeed-entry-point))
+  (call-interactively elfeed-entry-point))
 
 ;; New entry filtering
 
