@@ -57,6 +57,7 @@ These projects extend Elfeed with additional features:
 * [elfeed-tube](https://github.com/karthink/elfeed-tube)
 * [elfeed-ai](https://github.com/benthamite/elfeed-ai)
 * [elfeed-curate](https://github.com/rnadler/elfeed-curate)
+* [cuckoo-search](https://github.com/rtrppl/cuckoo-search)
 
 ## Getting Started
 
