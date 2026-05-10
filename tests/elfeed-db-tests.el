@@ -172,8 +172,14 @@
      ;; All feeds should have appeared.
      (should (= (length feeds) 8))
      ;; All entries should have appeared in date order
-     (should (equal (sort (copy-sequence entries) #'<) entries))
-     entries)))
+     (should (equal (sort (copy-sequence entries) #'<) entries)))
+   (let ((entries nil))
+     (with-elfeed-db-visit (entry)
+       (push (elfeed-entry-date entry) entries))
+     ;; All entries should have appeared.
+     (should (= (length entries) 80))
+     ;; All entries should have appeared in date order
+     (should (equal (sort (copy-sequence entries) #'<) entries)))))
 
 (ert-deftest elfeed-db-dates ()
   (with-elfeed-test

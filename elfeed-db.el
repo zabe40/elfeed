@@ -229,12 +229,15 @@ Additional tag lists can be given as MORE-TAGS."
 (defmacro with-elfeed-db-visit (binds &rest body)
   "Visit each entry in the database from newest to oldest.
 Use `elfeed-db-return' to exit early and optionally return data.
-BINDS are the bindings for entry and feed around BODY.
+BINDS are the bindings for entry and optionally feed around BODY.
 
   (with-elfeed-db-visit (entry feed)
     (do-something entry)
     (when (some-date-criteria-p entry)
-      (elfeed-db-return)))"
+      (elfeed-db-return)))
+
+  (with-elfeed-db-visit (entry)
+    ...)"
   (declare (indent defun))
   `(catch 'elfeed-db-done
      (prog1 nil
@@ -242,7 +245,9 @@ BINDS are the bindings for entry and feed around BODY.
        (avl-tree-mapc
         (lambda (id)
           (let* ((,(car binds) (elfeed-db-get-entry id))
-                 (,(cadr binds) (elfeed-entry-feed ,(car binds))))
+                 ,@(and (cdr binds)
+                        (string-match-p "\\`[^_]" (symbol-name (cadr binds)))
+                        `((,@(cdr binds) (elfeed-entry-feed ,(car binds))))))
             ,@body))
         elfeed-db-index))))
 
