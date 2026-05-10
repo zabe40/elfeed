@@ -271,7 +271,7 @@ The FEED-OR-ID may be a feed struct or a feed ID (url)."
 (defun elfeed-apply-hooks-now ()
   "Apply `elfeed-new-entry-hook' to all entries in the database."
   (interactive)
-  (elfeed-db-visit (entry _)
+  (elfeed-db-visit (entry)
     (run-hook-with-args 'elfeed-new-entry-hook entry)))
 
 (defmacro elfeed-db-return (&optional value)
@@ -281,7 +281,7 @@ The FEED-OR-ID may be a feed struct or a feed ID (url)."
 (defun elfeed-db-get-all-tags ()
   "Return a list of all tags currently in the database."
   (let ((table (make-hash-table :test 'eq)))
-    (elfeed-db-visit (e _)
+    (elfeed-db-visit (e)
       (dolist (tag (elfeed-entry-tags e))
         (setf (gethash tag table) tag)))
     (let ((tags ()))
@@ -618,7 +618,7 @@ If STATS-P is true, return the space cleared in bytes."
          (table (make-hash-table :test 'equal)))
     (dolist (id ids)
       (setf (gethash id table) nil))
-    (elfeed-db-visit (entry _)
+    (elfeed-db-visit (entry)
       (let ((content (elfeed-entry-content entry)))
         (when (elfeed-ref-p content)
           (setf (gethash (elfeed-ref-id content) table) t))))
@@ -646,7 +646,7 @@ If STATS-P is true, return the space cleared in bytes."
          (packed ()))
     (make-directory (expand-file-name "data" elfeed-db-directory) t)
     (with-temp-file content-temp
-      (elfeed-db-visit (entry _)
+      (elfeed-db-visit (entry)
         (let ((ref (elfeed-entry-content entry))
               (start (1- (point))))
           (when (elfeed-ref-p ref)

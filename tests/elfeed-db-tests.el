@@ -200,7 +200,7 @@
      (should updated-p)
      (let ((collected nil)
            (sorted nil))
-       (elfeed-db-visit (entry _)
+       (elfeed-db-visit (entry)
          (push (elfeed-entry-date entry) collected))
        (setf sorted (sort (copy-sequence collected) #'<))
        (should (equal collected sorted))))))
