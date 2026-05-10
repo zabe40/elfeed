@@ -256,30 +256,30 @@ Movement is configured by `elfeed-search-remain-on-entry'."
    ((not elfeed-db) "Database not loaded.")
    ((zerop (elfeed-db-last-update))
     (elfeed-search--intro-header))
-   ((> (elfeed-queue-count-total) 0)
-    (let ((total (elfeed-queue-count-total))
-          (in-process (elfeed-queue-count-active)))
-      (format "%d jobs pending, %d active..."
-              (- total in-process) in-process)))
-   ((let* ((update (elfeed-add-properties
-                    (format-time-string
-                     "%Y-%m-%d %H:%M"
-                     (seconds-to-time (elfeed-db-last-update)))
-                    'face 'elfeed-search-last-update-face))
-           (unread (elfeed-add-properties
-                    (elfeed-search--count-unread)
-                    'face 'elfeed-search-unread-count-face))
-           (filter (cond
-                    (elfeed-search-filter-active "")
-                    ((string-match-p "[^ ]" elfeed-search-filter)
-                     (mapconcat
-                      (lambda (x)
-                        (elfeed-add-properties
-                         x 'mouse-face 'highlight
-                         'help-echo "Remove filter"
-                         'elfeed-header-filter x))
-                      (split-string elfeed-search-filter) " "))
-                    (""))))
+   ((let ((total (elfeed-queue-count-total)))
+      (when (> total 0)
+        (let ((active (elfeed-queue-count-active)))
+          (format "%d jobs pending, %d active..."
+                  (- total active) active)))))
+   ((let ((update (elfeed-add-properties
+                   (format-time-string
+                    "%Y-%m-%d %H:%M"
+                    (seconds-to-time (elfeed-db-last-update)))
+                   'face 'elfeed-search-last-update-face))
+          (unread (elfeed-add-properties
+                   (elfeed-search--count-unread)
+                   'face 'elfeed-search-unread-count-face))
+          (filter (cond
+                   (elfeed-search-filter-active "")
+                   ((string-match-p "[^ ]" elfeed-search-filter)
+                    (mapconcat
+                     (lambda (x)
+                       (elfeed-add-properties
+                        x 'mouse-face 'highlight
+                        'help-echo "Remove filter"
+                        'elfeed-header-filter x))
+                     (split-string elfeed-search-filter) " "))
+                   (""))))
       (concat
        (elfeed-search--header-button #'elfeed-update
                                      (concat "Updated " update))
