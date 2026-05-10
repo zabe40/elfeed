@@ -45,19 +45,28 @@ setting `elfeed-use-curl` to nil.
 
 ## Extensions
 
-These projects extend Elfeed with additional features:
+There are projects which extend Elfeed with additional features. The following
+packages have more than 5K downloads on MELPA, which hints at a certain
+maturity, but no guarantees for compatibility are made.
 
-* [elfeed-org](https://github.com/remyhonig/elfeed-org)
 * [elfeed-goodies](https://github.com/algernon/elfeed-goodies)
+* [elfeed-org](https://github.com/remyhonig/elfeed-org)
 * [elfeed-protocol](https://github.com/fasheng/elfeed-protocol)
 * [elfeed-score](https://github.com/sp1ff/elfeed-score)
-* [Elfeed Android interface](https://github.com/areina/elfeed-cljsrn)
-  ([Google Play](https://play.google.com/store/apps/details?id=com.elfeedcljsrn))
-* [elfeed-dashboard](https://github.com/Manoj321/elfeed-dashboard)
 * [elfeed-tube](https://github.com/karthink/elfeed-tube)
-* [elfeed-ai](https://github.com/benthamite/elfeed-ai)
-* [elfeed-curate](https://github.com/rnadler/elfeed-curate)
+* [elfeed-web](https://github.com/emacs-elfeed/elfeed-web)
+
+Many more extensions can be found on MELPA - here is an non-exhaustive list:
+
+* [Elfeed-related packages on MELPA](https://melpa.org/#/?q=elfeed&sort=downloads&asc=false)
+* [Elfeed Android interface](https://github.com/areina/elfeed-cljsrn) ([Google Play](https://play.google.com/store/apps/details?id=com.elfeedcljsrn))
 * [cuckoo-search](https://github.com/rtrppl/cuckoo-search)
+* [elfeed-ai](https://github.com/benthamite/elfeed-ai)
+* [elfeed-autotag](https://github.com/paulelms/elfeed-autotag)
+* [elfeed-curate](https://github.com/rnadler/elfeed-curate)
+* [elfeed-dashboard](https://github.com/manojm321/elfeed-dashboard)
+* [elfeed-summarize](https://github.com/fritzgrabo/elfeed-summarize)
+* [elfeed-summary](https://github.com/SqrtMinusOne/elfeed-summary)
 
 ## Getting Started
 
