@@ -983,7 +983,7 @@ Given a prefix, this function becomes `elfeed-search-fetch-visible'."
            for entry in elfeed-search-entries
            for feed = (elfeed-entry-feed entry)
            for url = (elfeed-feed-url feed)
-           when (not (gethash url seen))
+           unless (gethash url seen)
            do (elfeed-update-feed (setf (gethash url seen) url))))
 
 (defun elfeed-search-update-line (&optional n)

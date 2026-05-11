@@ -404,8 +404,7 @@ Runs `elfeed-db-unload-hook' after unloading the database."
 (defun elfeed-db--plist-fixup (plist)
   "Remove nil values from PLIST."
   (cl-loop for (k v) on plist by #'cddr
-           when (not (null v))
-           collect k and collect v))
+           when v collect k and collect v))
 
 (defun elfeed-meta (thing key &optional default)
   "Access metadata for THING (entry, feed) under KEY.
