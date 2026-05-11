@@ -31,6 +31,9 @@
 (defvar elfeed-search--resize-timer nil
   "Timer to debounce search window resizing.")
 
+(defvar elfeed-search--last-width 0
+  "The last window width.")
+
 (defvar elfeed-search-last-update 0
   "The last time the buffer was redrawn in epoch seconds.")
 
@@ -957,16 +960,18 @@ The function is used as hook.  Instead of this function, you usually
 want to use `elfeed-search-update'."
   (elfeed-search-update))
 
-(defun elfeed-search--resize (_win)
-  "Resize search window.
+(defun elfeed-search--resize (win)
+  "Resize search window WIN.
 The function is used as hook."
-  (when elfeed-search--resize-timer
-    (cancel-timer elfeed-search--resize-timer)
-    (setq elfeed-search--resize-timer nil))
-  (setf elfeed-search--resize-timer
-        (run-at-time elfeed-search-update-delay nil
-                     #'elfeed-search--update-immediately
-                     (elfeed-search-buffer) :preserve)))
+  (when (/= (window-width win) elfeed-search--last-width)
+    (when elfeed-search--resize-timer
+      (cancel-timer elfeed-search--resize-timer)
+      (setq elfeed-search--resize-timer nil))
+    (setf elfeed-search--last-width (window-width win)
+          elfeed-search--resize-timer
+          (run-at-time elfeed-search-update-delay nil
+                       #'elfeed-search--update-immediately
+                       (elfeed-search-buffer) :preserve))))
 
 (defun elfeed-search-fetch (prefix)
   "Update all feeds via `elfeed-update', or only visible feeds with PREFIX.
