@@ -322,50 +322,6 @@ The FEED-OR-ID may be a feed struct or a feed ID (url)."
   "Run `elfeed-db-save' without triggering any errors, for use as a safe hook."
   (ignore-errors (elfeed-db-save)))
 
-(defun elfeed-db-upgrade (db)
-  "Upgrade the database DB from a previous format."
-  (if (not (vectorp (plist-get db :index)))
-      db  ; Database is already in record format
-    (let* ((new-db (elfeed-db--empty))
-           ;; Dynamically bind for other functions
-           (elfeed-db-feeds (plist-get new-db :feeds))
-           (elfeed-db-entries (plist-get new-db :entries))
-           (elfeed-db-index (plist-get new-db :index)))
-      ;; Fix up feeds
-      (cl-loop with table = (plist-get new-db :feeds)
-               for feed hash-values of (plist-get db :feeds)
-               for id = (aref feed 1)
-               for fixed = (elfeed-feed--create
-                            :id id
-                            :url (aref feed 2)
-                            :title (aref feed 3)
-                            :author (aref feed 4)
-                            :meta (aref feed 5))
-               do (setf (gethash id table) fixed))
-      ;; Fix up entries
-      (cl-loop with table = (plist-get new-db :entries)
-               with index = (plist-get new-db :index)
-               for entry hash-values of (plist-get db :entries)
-               for id = (aref entry 1)
-               for content = (aref entry 5)
-               for fixed = (elfeed-entry--create
-                            :id id
-                            :title (aref entry 2)
-                            :link (aref entry 3)
-                            :date (aref entry 4)
-                            :content (if (vectorp content)
-                                         (elfeed-ref--create
-                                          :id (aref content 1))
-                                       content)
-                            :content-type (aref entry 6)
-                            :enclosures (aref entry 7)
-                            :tags (aref entry 8)
-                            :feed-id (aref entry 9)
-                            :meta (aref entry 10))
-               do (setf (gethash id table) fixed)
-               do (avl-tree-enter index id))
-      (plist-put new-db :last-update (plist-get db :last-update)))))
-
 (defun elfeed-db--empty ()
   "Create an empty database object."
   `(:version ,elfeed-db-version
@@ -389,12 +345,10 @@ The FEED-OR-ID may be a feed struct or a feed ID (url)."
                                data ())
         :index [cl-struct-avl-tree- [nil nil nil 0] elfeed-db-compare]))
 
-;; To cope with the incompatible struct changes in Emacs 26, Elfeed
-;; uses version 4 of the database format when run under Emacs 26. This
-;; version saves a dummy, empty index in front of the real database. A
-;; user going from Emacs 26 to Emacs 25 will quietly load an empty
-;; index since it's unreasonable to downgrade (would require rewriting
-;; the Emacs reader from scratch).
+(defun elfeed-db-upgrade (_db)
+  "Upgrade the database DB from a previous format."
+  (error "Upgrade is not supported"))
+(make-obsolete 'elfeed-db-upgrade nil "3.4.2")
 
 (defun elfeed-db-load ()
   "Load the database index from the filesystem."
@@ -421,11 +375,8 @@ The FEED-OR-ID may be a feed struct or a feed ID (url)."
           (kill-buffer))))
     ;; Perform an upgrade if necessary and possible
     (unless (equal (plist-get elfeed-db :version) elfeed-db-version)
-      (ignore-errors
-        (copy-file index (concat index ".backup")))
-      (message "Upgrading Elfeed index for Emacs 26 ...")
-      (setf elfeed-db (elfeed-db-upgrade elfeed-db))
-      (message "Elfeed index upgrade complete."))
+      (setq elfeed-db nil)
+      (error "Elfeed database format is outdated.  Please upgrade first using an older version of Elfeed"))
     (setf elfeed-db-feeds (plist-get elfeed-db :feeds)
           elfeed-db-entries (plist-get elfeed-db :entries)
           elfeed-db-index (plist-get elfeed-db :index)
