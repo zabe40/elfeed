@@ -309,11 +309,6 @@ The FEED-OR-ID may be a feed struct or a feed ID (url)."
             (print-circle nil))
         (princ (format ";;; Elfeed Database Index (version %s)\n\n"
                        elfeed-db-version))
-        (when (eql elfeed-db-version 4)
-          ;; Put empty dummy index in front
-          (princ ";; Dummy index for backwards compatablity:\n")
-          (prin1 (elfeed-db--dummy))
-          (princ "\n\n;; Real index:\n"))
         (prin1 elfeed-db)))
     (rename-file temp dest t)
     :success))
@@ -329,21 +324,6 @@ The FEED-OR-ID may be a feed struct or a feed ID (url)."
     :entries ,(make-hash-table :test 'equal)
     ;; Compiler may warn about this (bug#15327):
     :index ,(avl-tree-create #'elfeed-db-compare)))
-
-(defun elfeed-db--dummy ()
-  "Create an empty dummy database for Emacs 25 and earlier."
-  (list :version "0.0.3"
-        :feeds #s(hash-table size 65
-                             test equal
-                             rehash-size 1.5
-                             rehash-threshold 0.8
-                             data ())
-        :entries #s(hash-table size 65
-                               test equal
-                               rehash-size 1.5
-                               rehash-threshold 0.8
-                               data ())
-        :index [cl-struct-avl-tree- [nil nil nil 0] elfeed-db-compare]))
 
 (defun elfeed-db-upgrade (_db)
   "Upgrade the database DB from a previous format."
