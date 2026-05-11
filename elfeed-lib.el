@@ -368,11 +368,11 @@ The relative URL algorithm is described in RFC 3986 §5.2.4."
                 (url-filename old) new-file)
           (url-recreate-url old)))
        ;; Replace the relative part.
-       ((progn
-          (setf (url-filename old) (elfeed-remove-dot-segments new-url)
-                (url-target old) nil
-                (url-attributes old) nil)
-          (url-recreate-url old)))))))
+       (t
+        (setf (url-filename old) (elfeed-remove-dot-segments new-url)
+              (url-target old) nil
+              (url-attributes old) nil)
+        (url-recreate-url old))))))
 
 (defun elfeed-url-to-namespace (url)
   "Compute an ID namespace from URL."

@@ -402,10 +402,9 @@ non-nil), accept ranges of enclosure numbers, as per
         (if (= count 1)
             (read-number (format "%s: " prompt) 1)
           (read-number (format "%s (1-%d): " prompt count)))
-      (progn
-        (setq def (if (= count 1) "1" (format "1-%d" count)))
-        (read-string (format "%s (default %s): " prompt def)
-                     nil nil def)))))
+      (setq def (if (= count 1) "1" (format "1-%d" count)))
+      (read-string (format "%s (default %s): " prompt def)
+                   nil nil def))))
 
 (defun elfeed--request-enclosure-path (fname path)
   "Ask the user where to save FNAME (default is PATH/FNAME)."
