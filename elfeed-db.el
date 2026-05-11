@@ -119,10 +119,8 @@ Return non-nil if an actual update occurred, not counting content."
 (defun elfeed-db-get-feed (id)
   "Get/create the feed for ID."
   (elfeed-db-ensure)
-  (let ((feed (gethash id elfeed-db-feeds)))
-    (or feed
-        (setf (gethash id elfeed-db-feeds)
-              (elfeed-feed--create :id id)))))
+  (with-memoization (gethash id elfeed-db-feeds)
+    (elfeed-feed--create :id id)))
 
 (defun elfeed-db-get-entry (id)
   "Get the entry for ID."
